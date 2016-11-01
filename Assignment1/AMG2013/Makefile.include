@@ -25,13 +25,15 @@ CC = mpicc
 #	with more than 2 billion variables)
 #   add '-DHYPRE_LONG_LONG'  to 'INCLUDE_CFLAGS'
 
-##The following line was default
-#INCLUDE_CFLAGS = -O2 -DTIMER_USE_MPI -DHYPRE_USING_OPENMP -DHYPRE_LONG_LONG -DHYPRE_NO_GLOBAL_PARTITION -fopenmp
-INCLUDE_CFLAGS = -O2 -DTIMER_USE_MPI -DHYPRE_LONG_LONG -DHYPRE_NO_GLOBAL_PARTITION
+## For MPI only:
+#INCLUDE_CFLAGS = -O2 -DTIMER_USE_MPI -DHYPRE_LONG_LONG -DHYPRE_NO_GLOBAL_PARTITION
+## For OpenMP+MPI:
+INCLUDE_CFLAGS = -O2 -DTIMER_USE_MPI -DHYPRE_USING_OPENMP -DHYPRE_LONG_LONG -DHYPRE_NO_GLOBAL_PARTITION -fopenmp
 
 # set link flags here
 #INCLUDE_LFLAGS = -lm -openmp -qsmp
-##The following line was default
-##INCLUDE_LFLAGS = -lm  -fopenmp
-INCLUDE_LFLAGS = -lm
+## For OpenMP+MPI:
+#INCLUDE_LFLAGS = -lm  -fopenmp
+## For MPI only:
+#INCLUDE_LFLAGS = -lm
 

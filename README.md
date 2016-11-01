@@ -1,7 +1,8 @@
 # SuperCompW1617
 ## Contents
-  1.How to set up git on SuperMUC
-  2.Bash file
+  1.  How to set up git on SuperMUC
+  2.  Bash file
+
 ## How to set up git on SuperMUC:
 
 Only works for repositories of github.com, not for lrz gitlab repositories );

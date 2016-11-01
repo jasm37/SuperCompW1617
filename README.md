@@ -3,13 +3,13 @@
 
 Only works for repositories of github.com, not for lrz gitlab repositories );
 
-1. Log in to lxhalle like usual with 
+1. Log in to lxhalle like usual with: 
 
   ```sh
   ssh <informatics-tum-login>@lxhalle.informatik.tu-muenchen.de
   ```
 
-2.  Log in to SuperMUC with
+2.  Log in to SuperMUC with:
   ```sh
   ssh -R <port-number>:github.com:9418: <supermuc-login>@supermuc.lrz.de
   ```
@@ -19,7 +19,7 @@ Only works for repositories of github.com, not for lrz gitlab repositories );
 
 3.  On supermuc:
 
-  First load the git module with :
+  First load the git module with:
   ```sh
   module load git
   ```

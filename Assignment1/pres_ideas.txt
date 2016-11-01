@@ -1,0 +1,4 @@
+Ideas for the video-presentation
+
+-Explain a little about the AMG benchmark.
+

@@ -2,8 +2,9 @@
 ## Contents
   1.  How to set up git on SuperMUC
   2.  Bash file
+  3.  Running .sh files
 
-## How to set up git on SuperMUC:
+## 1. How to set up git on SuperMUC:
 
 Only works for repositories of github.com, not for lrz gitlab repositories );
 
@@ -36,6 +37,21 @@ Only works for repositories of github.com, not for lrz gitlab repositories );
 
   Just remember that in supermuc we can only pull from git but not push so you need to make the changes somewhere else.
 
-## Bashfile
+## 2. Bash file
 
 If you don't want to type the same commands every time you log in to SuperMUC then just create a file named **.bashrc** in the folder where you log in (you could do this with vim). There you should write the commands you want to be run every time you log in (one per line). This is done mainly for the **module load** or **module unload** commands for MPI and git.
+
+## 3. Running .sh files
+
+To run any .ssh file you first have to change the permission to execute that file. I f your file is mysh.sh then you have to first do:
+```sh
+chmod +x /path/to/mysh.sh
+```
+Then to execute just do:
+```sh
+/path/to/yourscript.sh
+```
+or if you are executing it locally, just:
+```sh
+./yourscript.sh
+```

@@ -49,9 +49,9 @@ chmod +x /path/to/mysh.sh
 ```
 Then to execute just do:
 ```sh
-/path/to/yourscript.sh
+/path/to/mysh.sh
 ```
 or if you are executing it locally, just:
 ```sh
-./yourscript.sh
+./mysh.sh
 ```

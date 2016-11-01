@@ -37,4 +37,4 @@ Only works for repositories of github.com, not for lrz gitlab repositories );
 
 ## Bashfile
 
-If you don't want to type the same commands every time you log in to SuperMUC then just create a file named **.bashrc** in the folder where you log in (you could do this with vim). There you should write the commands you want to be run every time you log in (one per line).
+If you don't want to type the same commands every time you log in to SuperMUC then just create a file named **.bashrc** in the folder where you log in (you could do this with vim). There you should write the commands you want to be run every time you log in (one per line). This is done mainly for the **module load** or **module unload** commands for MPI and git.

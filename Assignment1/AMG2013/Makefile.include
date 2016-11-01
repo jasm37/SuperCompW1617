@@ -33,7 +33,7 @@ INCLUDE_CFLAGS = -O2 -DTIMER_USE_MPI -DHYPRE_USING_OPENMP -DHYPRE_LONG_LONG -DHY
 # set link flags here
 #INCLUDE_LFLAGS = -lm -openmp -qsmp
 ## For OpenMP+MPI:
-#INCLUDE_LFLAGS = -lm  -fopenmp
+INCLUDE_LFLAGS = -lm  -fopenmp
 ## For MPI only:
 #INCLUDE_LFLAGS = -lm
 

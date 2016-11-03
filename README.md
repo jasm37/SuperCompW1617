@@ -47,3 +47,4 @@ Run the .sh file with
 ```sh
 llsubmit mysh.sh
 ```
+Source:  https://www.lrz.de/services/compute/supermuc/loadleveler/#batch

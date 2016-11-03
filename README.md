@@ -43,15 +43,7 @@ If you don't want to type the same commands every time you log in to SuperMUC th
 
 ## 3. Running .sh files
 
-To run any .ssh file you first have to change the permission to execute that file. I f your file is mysh.sh then you have to first do:
+Run the .sh file with
 ```sh
-chmod +x /path/to/mysh.sh
-```
-Then to execute just do:
-```sh
-/path/to/mysh.sh
-```
-or if you are executing it locally, just:
-```sh
-./mysh.sh
+llsubmit mysh.sh
 ```

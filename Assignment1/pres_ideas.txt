@@ -3,3 +3,4 @@ Ideas for the video-presentation
 -Explain a little about the AMG benchmark:
  https://codesign.llnl.gov/amg2013.php and the readme in the docs folder of AMG.
 
+-Make excel tables and different graphics with setup and solve times for each case(# processes and threads)

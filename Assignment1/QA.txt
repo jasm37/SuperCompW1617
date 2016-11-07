@@ -1,0 +1,31 @@
+3.2.2
+  Q:  What info is being reported by the benchmark?
+  A:  (This is purely obtained from checking out the output)
+      1.Data of the Benchmark(Input and other default parameters)
+      2.Multigrid matrices size and sparsity per levels: Operator and Interpolation Matrices
+      2.1.  Operator complexity indicates how much memory is needed(if large then the matrix requires a lot of memory)
+      3.Wallclock and CPU clock times for:
+        -Setup Matrix and rhs
+        -Preconditioned conjugate gradient Setup(PCG)
+        -PCG Solve
+      4.Final residual norm of the multigrid
+      5.System Size * it / Solve Time
+      **Additionally we can measure speedups with respect to different # of processes
+
+  Q:  Which data is related to problem size, performance or correctness checks?
+  A:  For problem size: input parameters: (nx_global, ny_global, nz_global) and others
+      For performance:  clock and CPU times
+      For correctness:  last residual norm
+
+  Q:  Explain each of the metrics in the output that belong to performance
+  A:
+
+  Q:  Are any of the performance metrics compounded based on othersß
+  A:
+
+  Q:  Is this a weak or strong scaling benchmark? Explain.
+  A:  //J:I think this is strong scaling since we are increasing the number of processes and changing the local problem size but fixing the global one.
+      //J:Though I could be wrong );
+
+  Q:  Do the provided Load Leveler scripts keep the problem size constant? Explain
+  A:  //J:Like I said in the questions before it fixes the global problem size but changes the local one!

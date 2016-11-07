@@ -43,8 +43,12 @@ If you don't want to type the same commands every time you log in to SuperMUC th
 
 ## 3. Running .sh files
 
-Run the .sh file with
+If the you want to run mysh.sh then do:
 ```sh
 llsubmit mysh.sh
 ```
-Source:  https://www.lrz.de/services/compute/supermuc/loadleveler/#batch
+This submits the task to a node in SuperMUC instead of doing it in the Front End node.
+
+  Source and other important commands:
+
+  https://www.lrz.de/services/compute/supermuc/loadleveler/#batch

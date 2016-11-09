@@ -1,0 +1,8 @@
+
+#pragma simd  : for each vector loops executes n scalar loop iterations
+
+#pragma vector  : forces compiler to vectorize computations (loops)
+
+#pragma ivdep : forces compilor to ignore vector dependencies (similiar to vector); think crefully and apply only if no dependencies or it is possible to exploit vectorisation
+
+#pragma loop_count  : specifies number of loop iterations; forces to iterate despite what is in the loop statement

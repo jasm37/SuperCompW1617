@@ -11,3 +11,9 @@ floop-strip-mine	: perfroms strip mining, same as blocking, but ains to fir vect
 funroll-loops	: urolls loops, including loop peeling; make or may not make faster
 
 flto	: link-time optimizer; complicated; should make faster
+
+//---------------------------------------------------------
+
+xHost	: use best SIMD instuctions on local machine
+
+ipo	: interprocedural optimization; does a lot of suff; should make faster

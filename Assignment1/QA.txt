@@ -28,4 +28,5 @@
       //J:Though I could be wrong );
 
   Q:  Do the provided Load Leveler scripts keep the problem size constant? Explain
-  A:  //J:Like I said in the questions before it fixes the global problem size but changes the local one!
+  A: //Y: Each submission file has different problem size. However in this way we state sizes only for one process. If we summ sizes up we can see that the global size stays the same for every scenario and every number of processes
+ //J:Like I said in the questions before it fixes the global problem size but changes the local one!

@@ -4,6 +4,7 @@
       1.Data of the Benchmark(Input and other default parameters)
       2.Multigrid matrices size and sparsity per levels: Operator and Interpolation Matrices
       2.1.  Operator complexity indicates how much memory is needed(if large then the matrix requires a lot of memory)
+            Source: Page 4 of http://computation.llnl.gov/projects/hypre-scalable-linear-solvers-multigrid-methods/yang1.pdf
       3.Wallclock and CPU clock times for:
         -Setup Matrix and rhs
         -Preconditioned conjugate gradient Setup(PCG)

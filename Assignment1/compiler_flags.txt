@@ -1,0 +1,13 @@
+
+march=native	: uses machine native units to run program
+
+
+floop-block	: perfroms loop blocking(tiling) so that each sub-block of the loop fits to the cache size
+
+floop-interchange	: perfroms loop interchanging
+
+floop-strip-mine	: perfroms strip mining, same as blocking, but ains to fir vector sizes
+
+funroll-loops	: urolls loops, including loop peeling; make or may not make faster
+
+flto	: link-time optimizer; complicated; should make faster

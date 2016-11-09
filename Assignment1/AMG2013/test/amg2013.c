@@ -2009,6 +2009,7 @@ main( int   argc,
       }
 
       /* add entries */
+      //TODO
       for (box = 0; box < pdata.graph_nboxes; box++)
       {
          for (index[2] = pdata.graph_ilowers[box][2];
@@ -2122,6 +2123,7 @@ main( int   argc,
                                          pdata.graph_vars[box],
                                          1, &pdata.graph_entries[box],
                                          values);
+                                         //TODO
 #else
          for (index[2] = pdata.graph_ilowers[box][2];
               index[2] <= pdata.graph_iuppers[box][2];
@@ -2433,6 +2435,7 @@ main( int   argc,
       /*-----------------------------------------------------------
        * Solve the system using ParCSR version of PCG
        *-----------------------------------------------------------*/
+       //TODO
       
       if ((solver_id > -1) && (solver_id < 2))
       {
@@ -2520,6 +2523,7 @@ main( int   argc,
       /*-----------------------------------------------------------
        * Solve the system using ParCSR version of GMRES
        *-----------------------------------------------------------*/
+       //TODO
       
       if ((solver_id > 1) && (solver_id < 4))
       {

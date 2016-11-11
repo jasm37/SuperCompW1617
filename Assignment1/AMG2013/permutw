@@ -1,127 +1,127 @@
--march=narive
+-march=native
 -fomit-frame-pointer
--floop-block
+floop-block
 -floop-interchange
 -floop-strip-mine
 -funroll-loops
 -flto
--march=narive -fomit-frame-pointer
--march=narive -floop-block
--march=narive -floop-interchange
--march=narive -floop-strip-mine
--march=narive -funroll-loops
--march=narive -flto
--fomit-frame-pointer -floop-block
+-march=native -fomit-frame-pointer
+-march=native floop-block
+-march=native -floop-interchange
+-march=native -floop-strip-mine
+-march=native -funroll-loops
+-march=native -flto
+-fomit-frame-pointer floop-block
 -fomit-frame-pointer -floop-interchange
 -fomit-frame-pointer -floop-strip-mine
 -fomit-frame-pointer -funroll-loops
 -fomit-frame-pointer -flto
--floop-block -floop-interchange
--floop-block -floop-strip-mine
--floop-block -funroll-loops
--floop-block -flto
+floop-block -floop-interchange
+floop-block -floop-strip-mine
+floop-block -funroll-loops
+floop-block -flto
 -floop-interchange -floop-strip-mine
 -floop-interchange -funroll-loops
 -floop-interchange -flto
 -floop-strip-mine -funroll-loops
 -floop-strip-mine -flto
 -funroll-loops -flto
--march=narive -fomit-frame-pointer -floop-block
--march=narive -fomit-frame-pointer -floop-interchange
--march=narive -fomit-frame-pointer -floop-strip-mine
--march=narive -fomit-frame-pointer -funroll-loops
--march=narive -fomit-frame-pointer -flto
--march=narive -floop-block -floop-interchange
--march=narive -floop-block -floop-strip-mine
--march=narive -floop-block -funroll-loops
--march=narive -floop-block -flto
--march=narive -floop-interchange -floop-strip-mine
--march=narive -floop-interchange -funroll-loops
--march=narive -floop-interchange -flto
--march=narive -floop-strip-mine -funroll-loops
--march=narive -floop-strip-mine -flto
--march=narive -funroll-loops -flto
--fomit-frame-pointer -floop-block -floop-interchange
--fomit-frame-pointer -floop-block -floop-strip-mine
--fomit-frame-pointer -floop-block -funroll-loops
--fomit-frame-pointer -floop-block -flto
+-march=native -fomit-frame-pointer floop-block
+-march=native -fomit-frame-pointer -floop-interchange
+-march=native -fomit-frame-pointer -floop-strip-mine
+-march=native -fomit-frame-pointer -funroll-loops
+-march=native -fomit-frame-pointer -flto
+-march=native floop-block -floop-interchange
+-march=native floop-block -floop-strip-mine
+-march=native floop-block -funroll-loops
+-march=native floop-block -flto
+-march=native -floop-interchange -floop-strip-mine
+-march=native -floop-interchange -funroll-loops
+-march=native -floop-interchange -flto
+-march=native -floop-strip-mine -funroll-loops
+-march=native -floop-strip-mine -flto
+-march=native -funroll-loops -flto
+-fomit-frame-pointer floop-block -floop-interchange
+-fomit-frame-pointer floop-block -floop-strip-mine
+-fomit-frame-pointer floop-block -funroll-loops
+-fomit-frame-pointer floop-block -flto
 -fomit-frame-pointer -floop-interchange -floop-strip-mine
 -fomit-frame-pointer -floop-interchange -funroll-loops
 -fomit-frame-pointer -floop-interchange -flto
 -fomit-frame-pointer -floop-strip-mine -funroll-loops
 -fomit-frame-pointer -floop-strip-mine -flto
 -fomit-frame-pointer -funroll-loops -flto
--floop-block -floop-interchange -floop-strip-mine
--floop-block -floop-interchange -funroll-loops
--floop-block -floop-interchange -flto
--floop-block -floop-strip-mine -funroll-loops
--floop-block -floop-strip-mine -flto
--floop-block -funroll-loops -flto
+floop-block -floop-interchange -floop-strip-mine
+floop-block -floop-interchange -funroll-loops
+floop-block -floop-interchange -flto
+floop-block -floop-strip-mine -funroll-loops
+floop-block -floop-strip-mine -flto
+floop-block -funroll-loops -flto
 -floop-interchange -floop-strip-mine -funroll-loops
 -floop-interchange -floop-strip-mine -flto
 -floop-interchange -funroll-loops -flto
 -floop-strip-mine -funroll-loops -flto
--march=narive -fomit-frame-pointer -floop-block -floop-interchange
--march=narive -fomit-frame-pointer -floop-block -floop-strip-mine
--march=narive -fomit-frame-pointer -floop-block -funroll-loops
--march=narive -fomit-frame-pointer -floop-block -flto
--march=narive -fomit-frame-pointer -floop-interchange -floop-strip-mine
--march=narive -fomit-frame-pointer -floop-interchange -funroll-loops
--march=narive -fomit-frame-pointer -floop-interchange -flto
--march=narive -fomit-frame-pointer -floop-strip-mine -funroll-loops
--march=narive -fomit-frame-pointer -floop-strip-mine -flto
--march=narive -fomit-frame-pointer -funroll-loops -flto
--march=narive -floop-block -floop-interchange -floop-strip-mine
--march=narive -floop-block -floop-interchange -funroll-loops
--march=narive -floop-block -floop-interchange -flto
--march=narive -floop-block -floop-strip-mine -funroll-loops
--march=narive -floop-block -floop-strip-mine -flto
--march=narive -floop-block -funroll-loops -flto
--march=narive -floop-interchange -floop-strip-mine -funroll-loops
--march=narive -floop-interchange -floop-strip-mine -flto
--march=narive -floop-interchange -funroll-loops -flto
--march=narive -floop-strip-mine -funroll-loops -flto
--fomit-frame-pointer -floop-block -floop-interchange -floop-strip-mine
--fomit-frame-pointer -floop-block -floop-interchange -funroll-loops
--fomit-frame-pointer -floop-block -floop-interchange -flto
--fomit-frame-pointer -floop-block -floop-strip-mine -funroll-loops
--fomit-frame-pointer -floop-block -floop-strip-mine -flto
--fomit-frame-pointer -floop-block -funroll-loops -flto
+-march=native -fomit-frame-pointer floop-block -floop-interchange
+-march=native -fomit-frame-pointer floop-block -floop-strip-mine
+-march=native -fomit-frame-pointer floop-block -funroll-loops
+-march=native -fomit-frame-pointer floop-block -flto
+-march=native -fomit-frame-pointer -floop-interchange -floop-strip-mine
+-march=native -fomit-frame-pointer -floop-interchange -funroll-loops
+-march=native -fomit-frame-pointer -floop-interchange -flto
+-march=native -fomit-frame-pointer -floop-strip-mine -funroll-loops
+-march=native -fomit-frame-pointer -floop-strip-mine -flto
+-march=native -fomit-frame-pointer -funroll-loops -flto
+-march=native floop-block -floop-interchange -floop-strip-mine
+-march=native floop-block -floop-interchange -funroll-loops
+-march=native floop-block -floop-interchange -flto
+-march=native floop-block -floop-strip-mine -funroll-loops
+-march=native floop-block -floop-strip-mine -flto
+-march=native floop-block -funroll-loops -flto
+-march=native -floop-interchange -floop-strip-mine -funroll-loops
+-march=native -floop-interchange -floop-strip-mine -flto
+-march=native -floop-interchange -funroll-loops -flto
+-march=native -floop-strip-mine -funroll-loops -flto
+-fomit-frame-pointer floop-block -floop-interchange -floop-strip-mine
+-fomit-frame-pointer floop-block -floop-interchange -funroll-loops
+-fomit-frame-pointer floop-block -floop-interchange -flto
+-fomit-frame-pointer floop-block -floop-strip-mine -funroll-loops
+-fomit-frame-pointer floop-block -floop-strip-mine -flto
+-fomit-frame-pointer floop-block -funroll-loops -flto
 -fomit-frame-pointer -floop-interchange -floop-strip-mine -funroll-loops
 -fomit-frame-pointer -floop-interchange -floop-strip-mine -flto
 -fomit-frame-pointer -floop-interchange -funroll-loops -flto
 -fomit-frame-pointer -floop-strip-mine -funroll-loops -flto
--floop-block -floop-interchange -floop-strip-mine -funroll-loops
--floop-block -floop-interchange -floop-strip-mine -flto
--floop-block -floop-interchange -funroll-loops -flto
--floop-block -floop-strip-mine -funroll-loops -flto
+floop-block -floop-interchange -floop-strip-mine -funroll-loops
+floop-block -floop-interchange -floop-strip-mine -flto
+floop-block -floop-interchange -funroll-loops -flto
+floop-block -floop-strip-mine -funroll-loops -flto
 -floop-interchange -floop-strip-mine -funroll-loops -flto
--march=narive -fomit-frame-pointer -floop-block -floop-interchange -floop-strip-mine
--march=narive -fomit-frame-pointer -floop-block -floop-interchange -funroll-loops
--march=narive -fomit-frame-pointer -floop-block -floop-interchange -flto
--march=narive -fomit-frame-pointer -floop-block -floop-strip-mine -funroll-loops
--march=narive -fomit-frame-pointer -floop-block -floop-strip-mine -flto
--march=narive -fomit-frame-pointer -floop-block -funroll-loops -flto
--march=narive -fomit-frame-pointer -floop-interchange -floop-strip-mine -funroll-loops
--march=narive -fomit-frame-pointer -floop-interchange -floop-strip-mine -flto
--march=narive -fomit-frame-pointer -floop-interchange -funroll-loops -flto
--march=narive -fomit-frame-pointer -floop-strip-mine -funroll-loops -flto
--march=narive -floop-block -floop-interchange -floop-strip-mine -funroll-loops
--march=narive -floop-block -floop-interchange -floop-strip-mine -flto
--march=narive -floop-block -floop-interchange -funroll-loops -flto
--march=narive -floop-block -floop-strip-mine -funroll-loops -flto
--march=narive -floop-interchange -floop-strip-mine -funroll-loops -flto
--fomit-frame-pointer -floop-block -floop-interchange -floop-strip-mine -funroll-loops
--fomit-frame-pointer -floop-block -floop-interchange -floop-strip-mine -flto
--fomit-frame-pointer -floop-block -floop-interchange -funroll-loops -flto
--fomit-frame-pointer -floop-block -floop-strip-mine -funroll-loops -flto
+-march=native -fomit-frame-pointer floop-block -floop-interchange -floop-strip-mine
+-march=native -fomit-frame-pointer floop-block -floop-interchange -funroll-loops
+-march=native -fomit-frame-pointer floop-block -floop-interchange -flto
+-march=native -fomit-frame-pointer floop-block -floop-strip-mine -funroll-loops
+-march=native -fomit-frame-pointer floop-block -floop-strip-mine -flto
+-march=native -fomit-frame-pointer floop-block -funroll-loops -flto
+-march=native -fomit-frame-pointer -floop-interchange -floop-strip-mine -funroll-loops
+-march=native -fomit-frame-pointer -floop-interchange -floop-strip-mine -flto
+-march=native -fomit-frame-pointer -floop-interchange -funroll-loops -flto
+-march=native -fomit-frame-pointer -floop-strip-mine -funroll-loops -flto
+-march=native floop-block -floop-interchange -floop-strip-mine -funroll-loops
+-march=native floop-block -floop-interchange -floop-strip-mine -flto
+-march=native floop-block -floop-interchange -funroll-loops -flto
+-march=native floop-block -floop-strip-mine -funroll-loops -flto
+-march=native -floop-interchange -floop-strip-mine -funroll-loops -flto
+-fomit-frame-pointer floop-block -floop-interchange -floop-strip-mine -funroll-loops
+-fomit-frame-pointer floop-block -floop-interchange -floop-strip-mine -flto
+-fomit-frame-pointer floop-block -floop-interchange -funroll-loops -flto
+-fomit-frame-pointer floop-block -floop-strip-mine -funroll-loops -flto
 -fomit-frame-pointer -floop-interchange -floop-strip-mine -funroll-loops -flto
--floop-block -floop-interchange -floop-strip-mine -funroll-loops -flto
--march=narive -fomit-frame-pointer -floop-block -floop-interchange -floop-strip-mine -funroll-loops
--march=narive -fomit-frame-pointer -floop-block -floop-interchange -floop-strip-mine -flto
--march=narive -fomit-frame-pointer -floop-block -floop-interchange -funroll-loops -flto
--march=narive -fomit-frame-pointer -floop-block -floop-strip-mine -funroll-loops -flto
--march=narive -fomit-frame-pointer -floop-interchange -floop-strip-mine -funroll-loops -flto
--march=narive -floop-block -floop-interchange -floop-strip-mine -funroll-loops -flto
--fomit-frame-pointer -floop-block -floop-interchange -floop-strip-mine -funroll-loops -flto
--march=narive -fomit-frame-pointer -floop-block -floop-interchange -floop-strip-mine -funroll-loops -flto
+floop-block -floop-interchange -floop-strip-mine -funroll-loops -flto
+-march=native -fomit-frame-pointer floop-block -floop-interchange -floop-strip-mine -funroll-loops
+-march=native -fomit-frame-pointer floop-block -floop-interchange -floop-strip-mine -flto
+-march=native -fomit-frame-pointer floop-block -floop-interchange -funroll-loops -flto
+-march=native -fomit-frame-pointer floop-block -floop-strip-mine -funroll-loops -flto
+-march=native -fomit-frame-pointer -floop-interchange -floop-strip-mine -funroll-loops -flto
+-march=native floop-block -floop-interchange -floop-strip-mine -funroll-loops -flto
+-fomit-frame-pointer floop-block -floop-interchange -floop-strip-mine -funroll-loops -flto
+-march=native -fomit-frame-pointer floop-block -floop-interchange -floop-strip-mine -funroll-loops -flto

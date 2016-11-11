@@ -20,8 +20,11 @@
 
   Q:  Explain each of the metrics in the output that belong to performance
   A:
+  // Wall clock time means difference between timestamps of start and finish of computations
+  // CPU time is time spent by processor only, excluding time spent for input/output, idle time
+  // Solver time is time spent inside of the solution function in contrary to time spent on filling in matrix entries
 
-  Q:  Are any of the performance metrics compounded based on othersß
+  Q:  Are any of the performance metrics compounded based on others
   A:
 
   Q:  Is this a weak or strong scaling benchmark? Explain.
@@ -31,3 +34,18 @@
   Q:  Do the provided Load Leveler scripts keep the problem size constant? Explain
   A: //Y: Each submission file has different problem size. However in this way we state sizes only for one process. If we summ sizes up we can see that the global size stays the same for every scenario and every number of processes
  //J:Like I said in the questions before it fixes the global problem size but changes the local one!
+ 
+  Q:   Look at the compilers’ help (by issuing icc -help and gcc -help). How many optimization flags are available for each compiler (approximately)?
+  A: // Y: --help flag returns hundreds for icc and about 30 for gcc running through powerset of all flags with crdinal nuber 2^n is not duable at all
+  
+  Q:  Given how much time it takes to evaluate a combination of compiler flags, would it be realistic to test
+all possible combinations of available compiler flags in these compilers?
+  A: // Y: Running through powerset of all flags with crdinal nuber 2^n is not duable at all
+  
+  Q: Which compiler and optimization flags combination produced the fastest binary?
+  A: Y: (For now) the fastest combination (among our tries) is icc with -xHost flag
+  
+  Q: In the video, discuss the difference between Intel’s simd, vector and ivdep #pragma directives. Addi-
+tionally, justify your decision to apply the selected #pragma in the particular location on the submitted
+source file.
+  A: 

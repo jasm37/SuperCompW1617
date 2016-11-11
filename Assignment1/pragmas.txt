@@ -6,3 +6,9 @@
 #pragma ivdep : forces compilor to ignore vector dependencies (similiar to vector); think crefully and apply only if no dependencies or it is possible to exploit vectorisation
 
 #pragma loop_count  : specifies number of loop iterations; forces to iterate despite what is in the loop statement
+
+#pragma inline  : hints the compiler that we would like the call to be inline
+
+#pragma noinline  : tells the compiler that the call should not be inlined
+
+#pragma forceinline : the call should be inlined whenever possible for the compiler

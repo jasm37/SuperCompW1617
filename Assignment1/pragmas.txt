@@ -12,3 +12,14 @@
 #pragma noinline  : tells the compiler that the call should not be inlined
 
 #pragma forceinline : the call should be inlined whenever possible for the compiler
+
+#pragma unroll :  if written before a loop, unroll the loop completely unless unroll(n)
+
+#pragma nounroll  : instructs not to unroll a loop
+
+#pragma unroll_and_jam  : partially unrolls loops highes than the innermost and fuses/jams the the resulting loop
+
+#pragma nofusion :  does not fuse loops
+
+#pragma distribute_point  : Used to suggest the compiler to split the large loops into smaller ones
+                            This is useful when vectorization cannot take place because of excessive register usage.

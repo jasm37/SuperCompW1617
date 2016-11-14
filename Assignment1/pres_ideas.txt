@@ -10,28 +10,50 @@ Ideas for the video-presentation
         
  - explanation about arguments for benchmark: we pass nu of discretesation dots in every dimensio to be spawned in each process  
 
+show hybrid.2.sh quickly
 
 ---- SECOND PART ? ----------------
 
-say about MPI
+say about MPI ?
 
-show mpi.2.sh quickly
 show output file and discuss QA: reported things, performance, weak scaling
 
 show Makefile.include
-discuss QA: gcc&icc flags, combinations
-say which flags and combinations we used: floop are not supprted, so size is reduced
-what we get: -o3 -unroll and show time 
+
+(answer QA 3.2.2) gcc&icc flags, put numbers to presentation, combinations 2^n
+
+say which flags and combinations we used: floop are not supprted, so size is reduced, left are: -flto, -funloop-unroll, - xHost,  -march=native 
+
+what we get: -O3 -unroll and show time (line on presentaton)
 
 
 ---- THIRD PART ? --------------
 
 say what pragmas do generally
-how did we find bottleneck
+how did we find bottleneck (show screenshot of code)
 what did we choose: loops covered with flags, so tried out vectorisation
-discus QA: simd, vector, ivdep
-chosen what? 
-improvement gained
+
+(answer QA 4.2.2): simd, vector, ivdep 
+
+which pragma is chosen
+improvement gained: line from output
+
+
+---- FOURTH PART --------
+
+say what we do (OPEN MP scalabilty)
+
+show plot in pdf
+
+(answer QA 5.1.2)
+
+say: scalibility for pure MPI
+
+(answer QA 5.2.2)
+
+say : hybrid MPI+OpenMP
+
+(answer QA 5.3.2)
 
 
 -Make excel tables and different graphics with setup and solve times for each case(# processes and threads)

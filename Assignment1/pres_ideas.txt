@@ -1,6 +1,38 @@
 Ideas for the video-presentation
 
+---- FIRST PART ? -----------------
+
 -Explain a little about the AMG benchmark:
  https://codesign.llnl.gov/amg2013.php and the readme in the docs folder of AMG.
 
+- intoduction to Laplce program : 
+        we solve a Laplace problem for a cubic domain with (???) methods  
+        
+ - explanation about arguments for benchmark: we pass nu of discretesation dots in every dimensio to be spawned in each process  
+
+
+---- SECOND PART ? ----------------
+
+say about MPI
+
+show mpi.2.sh quickly
+show output file and discuss QA: reported things, performance, weak scaling
+
+show Makefile.include
+discuss QA: gcc&icc flags, combinations
+say which flags and combinations we used: floop are not supprted, so size is reduced
+what we get: -o3 -unroll and show time 
+
+
+---- THIRD PART ? --------------
+
+say what pragmas do generally
+how did we find bottleneck
+what did we choose: loops covered with flags, so tried out vectorisation
+discus QA: simd, vector, ivdep
+chosen what? 
+improvement gained
+
+
 -Make excel tables and different graphics with setup and solve times for each case(# processes and threads)
+

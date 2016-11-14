@@ -17,7 +17,7 @@
 
 #pragma nounroll  : instructs not to unroll a loop
 
-#pragma unroll_and_jam  : partially unrolls loops highes than the innermost and fuses/jams the the resulting loop
+#pragma unroll_and_jam  : partially unrolls loops higher than the innermost and fuses/jams the resulting loop
 
 #pragma nofusion :  does not fuse loops
 

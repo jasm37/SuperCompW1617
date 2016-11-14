@@ -1,0 +1,108 @@
+  3D 7-point Laplace problem on a cube
+  (nx_global, ny_global, nz_global) = (640, 320, 320)
+  (Px, Py, Pz) = (4, 2, 2)
+  (cx, cy, cz) = (1.000000, 1.000000, 1.000000)
+
+=============================================
+Setup matrix and rhs:
+=============================================
+Setup matrix and rhs:
+Setup matrix and rhs  wall clock time = 4.903700 seconds
+Setup matrix and rhs  cpu clock time  = 4.910000 seconds
+
+Number of MPI processes: 16 , Number of OpenMP threads: 1
+
+BoomerAMG SETUP PARAMETERS:
+
+ Max levels = 25
+ Num levels = 9
+
+ Strength Threshold = 0.250000
+ Interpolation Truncation Factor = 0.000000
+ Maximum Row Sum Threshold for Dependency Weakening = 0.900000
+
+ Coarsening Type = HMIS 
+ Hybrid Coarsening (switch to CLJP when coarsening slows)
+ measures are determined locally
+
+ no. of levels of aggressive coarsening: 1
+
+
+ No global partition option chosen.
+
+ Interpolation = extended+i interpolation
+
+Operator Matrix Information:
+
+                  nonzero         entries per row        row sums
+lev        rows   entries  sparse  min  max   avg       min         max
+=========================================================================
+ 0     65536000 457728000  0.000     4    7   7.0   0.000e+00   3.000e+00
+ 1      5364346 93386456  0.000     9   36  17.4  -6.040e-14   8.474e+00
+ 2      1213989 61196025  0.000    15   99  50.4  -1.673e-04   1.936e+01
+ 3       175883 13998987  0.000    15  159  79.6   3.753e-13   3.998e+01
+ 4        28074  3008464  0.004    14  246  107.2   2.276e-12   7.228e+01
+ 5         3662   373058  0.028    12  273  101.9   1.500e-11   2.151e+02
+ 6          436    28866  0.152    12  204  66.2  -1.279e+02   6.122e+02
+ 7           67     2329  0.519    14   65  34.8   3.496e+01   1.971e+03
+ 8            8       58  0.906     5    8   7.2   1.104e+02   4.560e+03
+
+
+Interpolation Matrix Information:
+
+                             entries/row    min     max         row sums
+lev        rows x cols          min max     weight   weight     min       max 
+=============================================================================
+ 0     65536000 x 5364346        1   9   2.646e-02 9.722e-01 2.778e-01 1.000e+00
+ 1      5364346 x 1213989        1   4   6.109e-03 1.000e+00 2.980e-01 1.000e+00
+ 2      1213989 x 175883         1   4   2.364e-03 1.000e+00 1.184e-01 1.000e+00
+ 3       175883 x 28074          0   4  -4.732e-01 7.329e-01 0.000e+00 1.000e+00
+ 4        28074 x 3662           0   4  -3.662e+00 6.644e+00 0.000e+00 1.000e+00
+ 5         3662 x 436            0   4  -6.925e+01 3.694e+01 0.000e+00 1.000e+00
+ 6          436 x 67             0   4  -2.615e+00 1.440e+00 0.000e+00 1.002e+00
+ 7           67 x 8              0   4   1.179e-02 9.525e-01 0.000e+00 1.000e+00
+
+
+     Complexity:    grid = 1.103553
+                operator = 1.375756
+
+
+
+
+BoomerAMG SOLVER PARAMETERS:
+
+  Maximum number of cycles:         1 
+  Stopping Tolerance:               0.000000e+00 
+  Cycle type (1 = V, 2 = W, etc.):  1
+
+  Relaxation Parameters:
+   Visiting Grid:                     down   up  coarse
+            Number of partial sweeps:    1    1     1 
+   Type 0=Jac, 3=hGS, 6=hSGS, 9=GE:      8    8     8 
+   Point types, partial sweeps (1=C, -1=F):
+                  Pre-CG relaxation (down):   0
+                   Post-CG relaxation (up):   0
+                             Coarsest grid:   0
+
+=============================================
+Setup phase times:
+=============================================
+PCG Setup:
+PCG Setup  wall clock time = 23.903982 seconds
+PCG Setup  cpu clock time  = 23.890000 seconds
+
+System Size / Setup Phase Time: 2.741635e+06
+
+=============================================
+Solve phase times:
+=============================================
+PCG Solve:
+PCG Solve  wall clock time = 25.835682 seconds
+PCG Solve  cpu clock time  = 25.820000 seconds
+
+AMG2013 Benchmark version 1.0
+Iterations = 15
+Final Relative Residual Norm = 8.889936e-07
+
+System Size * Iterations / Solve Phase Time: 3.804970e+07
+

@@ -1,0 +1,108 @@
+  3D 7-point Laplace problem on a cube
+  (nx_global, ny_global, nz_global) = (640, 320, 320)
+  (Px, Py, Pz) = (2, 1, 2)
+  (cx, cy, cz) = (1.000000, 1.000000, 1.000000)
+
+=============================================
+Setup matrix and rhs:
+=============================================
+Setup matrix and rhs:
+Setup matrix and rhs  wall clock time = 11.198813 seconds
+Setup matrix and rhs  cpu clock time  = 11.200000 seconds
+
+Number of MPI processes: 4 , Number of OpenMP threads: 1
+
+BoomerAMG SETUP PARAMETERS:
+
+ Max levels = 25
+ Num levels = 9
+
+ Strength Threshold = 0.250000
+ Interpolation Truncation Factor = 0.000000
+ Maximum Row Sum Threshold for Dependency Weakening = 0.900000
+
+ Coarsening Type = HMIS 
+ Hybrid Coarsening (switch to CLJP when coarsening slows)
+ measures are determined locally
+
+ no. of levels of aggressive coarsening: 1
+
+
+ No global partition option chosen.
+
+ Interpolation = extended+i interpolation
+
+Operator Matrix Information:
+
+                  nonzero         entries per row        row sums
+lev        rows   entries  sparse  min  max   avg       min         max
+=========================================================================
+ 0     65536000 457728000  0.000     4    7   7.0   0.000e+00   3.000e+00
+ 1      5417890 92989186  0.000     8   36  17.2  -5.351e-14   8.252e+00
+ 2      1206633 60197959  0.000    10   92  49.9   2.091e-14   1.726e+01
+ 3       170948 13541734  0.000    13  137  79.2   3.988e-13   3.205e+01
+ 4        28039  3044701  0.004    15  211  108.6   2.237e-12   7.766e+01
+ 5         3714   397072  0.029    13  265  106.9  -1.705e+01   1.830e+02
+ 6          483    36545  0.157    15  245  75.7  -1.301e+03   4.081e+03
+ 7           69     2351  0.494    14   65  34.1   4.056e+01   2.306e+03
+ 8            8       58  0.906     5    8   7.2   1.230e+02   4.172e+03
+
+
+Interpolation Matrix Information:
+
+                             entries/row    min     max         row sums
+lev        rows x cols          min max     weight   weight     min       max 
+=============================================================================
+ 0     65536000 x 5417890        1   9   2.646e-02 9.722e-01 2.778e-01 1.000e+00
+ 1      5417890 x 1206633        1   4   4.941e-03 1.000e+00 2.009e-01 1.000e+00
+ 2      1206633 x 170948         1   4   3.193e-03 1.000e+00 7.008e-02 1.000e+00
+ 3       170948 x 28039          0   4  -5.023e-01 6.091e-01 0.000e+00 1.000e+00
+ 4        28039 x 3714           0   4  -9.695e+00 4.210e+00 0.000e+00 1.000e+00
+ 5         3714 x 483            0   4  -3.492e+02 8.063e+02 -3.510e-02 1.003e+00
+ 6          483 x 69             0   4  -1.895e+00 1.858e+00 -4.638e-02 1.008e+00
+ 7           69 x 8              0   4  -3.799e-01 8.422e-01 0.000e+00 1.000e+00
+
+
+     Complexity:    grid = 1.104184
+                operator = 1.371858
+
+
+
+
+BoomerAMG SOLVER PARAMETERS:
+
+  Maximum number of cycles:         1 
+  Stopping Tolerance:               0.000000e+00 
+  Cycle type (1 = V, 2 = W, etc.):  1
+
+  Relaxation Parameters:
+   Visiting Grid:                     down   up  coarse
+            Number of partial sweeps:    1    1     1 
+   Type 0=Jac, 3=hGS, 6=hSGS, 9=GE:      8    8     8 
+   Point types, partial sweeps (1=C, -1=F):
+                  Pre-CG relaxation (down):   0
+                   Post-CG relaxation (up):   0
+                             Coarsest grid:   0
+
+=============================================
+Setup phase times:
+=============================================
+PCG Setup:
+PCG Setup  wall clock time = 104.396967 seconds
+PCG Setup  cpu clock time  = 104.350000 seconds
+
+System Size / Setup Phase Time: 6.277577e+05
+
+=============================================
+Solve phase times:
+=============================================
+PCG Solve:
+PCG Solve  wall clock time = 69.607225 seconds
+PCG Solve  cpu clock time  = 69.570000 seconds
+
+AMG2013 Benchmark version 1.0
+Iterations = 15
+Final Relative Residual Norm = 5.677245e-07
+
+System Size * Iterations / Solve Phase Time: 1.412267e+07
+

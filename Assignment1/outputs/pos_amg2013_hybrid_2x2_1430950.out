@@ -1,0 +1,116 @@
+
+DISK GROUP QUOTAS for home and project file systems:
+Filesystem                                 Quota     Used Space     Free Space
+/home/hpc/h039y           ($HOME)        102.4GB    3.1GB ( 3%)   99.3GB (97%)
+/gpfs/work/h039y          ($WORK)        1000.0GB   24.0MB ( 0%)  1000.0GB (100%)
+-------------------------------------------------------------------------------
+
+Executing LRZ User Prolog ...
+  3D 7-point Laplace problem on a cube
+  (nx_global, ny_global, nz_global) = (640, 320, 320)
+  (Px, Py, Pz) = (2, 1, 1)
+  (cx, cy, cz) = (1.000000, 1.000000, 1.000000)
+
+=============================================
+Setup matrix and rhs:
+=============================================
+Setup matrix and rhs:
+Setup matrix and rhs  wall clock time = 6.364192 seconds
+Setup matrix and rhs  cpu clock time  = 6.360000 seconds
+
+Number of MPI processes: 2 , Number of OpenMP threads: 2
+
+BoomerAMG SETUP PARAMETERS:
+
+ Max levels = 25
+ Num levels = 9
+
+ Strength Threshold = 0.250000
+ Interpolation Truncation Factor = 0.000000
+ Maximum Row Sum Threshold for Dependency Weakening = 0.900000
+
+ Coarsening Type = HMIS 
+ Hybrid Coarsening (switch to CLJP when coarsening slows)
+ measures are determined locally
+
+ no. of levels of aggressive coarsening: 1
+
+
+ No global partition option chosen.
+
+ Interpolation = extended+i interpolation
+
+Operator Matrix Information:
+
+                  nonzero         entries per row        row sums
+lev        rows   entries  sparse  min  max   avg       min         max
+=========================================================================
+ 0     65536000 457728000  0.000     4    7   7.0   0.000e+00   3.000e+00
+ 1      5447037 92960951  0.000     8   34  17.1  -4.619e-14   8.032e+00
+ 2      1277399 63436291  0.000    15   90  49.7   3.619e-14   1.726e+01
+ 3       215713 17323439  0.000    20  142  80.3   3.799e-13   2.815e+01
+ 4        45753  5451911  0.003    16  235  119.2   1.830e-12   6.361e+01
+ 5         7259   926427  0.018    13  299  127.6  -5.845e+03   2.343e+03
+ 6          884    87416  0.112    11  248  98.9  -1.385e+02   8.311e+02
+ 7          116     5608  0.417    15  107  48.3  -5.840e+01   2.121e+03
+ 8           14      176  0.898    10   14  12.6   8.170e+01   1.863e+03
+
+
+Interpolation Matrix Information:
+
+                             entries/row    min     max         row sums
+lev        rows x cols          min max     weight   weight     min       max 
+=============================================================================
+ 0     65536000 x 5447037        1   9   2.646e-02 9.722e-01 2.778e-01 1.000e+00
+ 1      5447037 x 1277399        1   4   6.201e-03 6.838e-01 2.861e-01 1.000e+00
+ 2      1277399 x 215713         1   4   3.142e-03 7.295e-01 9.560e-02 1.000e+00
+ 3       215713 x 45753          0   4  -6.262e-01 8.342e-01 0.000e+00 1.000e+00
+ 4        45753 x 7259           0   4  -1.543e+03 6.036e+02 0.000e+00 1.000e+00
+ 5         7259 x 884            0   4  -8.815e+02 3.769e+02 -7.716e-02 1.555e+00
+ 6          884 x 116            0   4  -9.532e+00 7.069e+00 -9.001e-01 1.005e+00
+ 7          116 x 14             0   4  -2.001e-01 5.316e-01 0.000e+00 1.015e+00
+
+
+     Complexity:    grid = 1.106723
+                operator = 1.393667
+
+
+
+
+BoomerAMG SOLVER PARAMETERS:
+
+  Maximum number of cycles:         1 
+  Stopping Tolerance:               0.000000e+00 
+  Cycle type (1 = V, 2 = W, etc.):  1
+
+  Relaxation Parameters:
+   Visiting Grid:                     down   up  coarse
+            Number of partial sweeps:    1    1     1 
+   Type 0=Jac, 3=hGS, 6=hSGS, 9=GE:      8    8     8 
+   Point types, partial sweeps (1=C, -1=F):
+                  Pre-CG relaxation (down):   0
+                   Post-CG relaxation (up):   0
+                             Coarsest grid:   0
+
+=============================================
+Setup phase times:
+=============================================
+PCG Setup:
+PCG Setup  wall clock time = 111.961247 seconds
+PCG Setup  cpu clock time  = 184.780000 seconds
+
+System Size / Setup Phase Time: 5.853454e+05
+
+=============================================
+Solve phase times:
+=============================================
+PCG Solve:
+PCG Solve  wall clock time = 69.562797 seconds
+PCG Solve  cpu clock time  = 139.000000 seconds
+
+AMG2013 Benchmark version 1.0
+Iterations = 15
+Final Relative Residual Norm = 3.366632e-07
+
+System Size * Iterations / Solve Phase Time: 1.413169e+07
+

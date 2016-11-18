@@ -1,0 +1,80 @@
+1.  Race Condition: A race condition occurs when two or more threads can access 
+    shared data and they try to change it at the same time. Because the thread
+    scheduling algorithm can swap between threads at any time, you don't know
+    the order in which the threads will attempt to access the shared data.
+    Therefore, the result of the change in data is dependent on the thread
+    scheduling algorithm, i.e. both threads are "racing" to access/change the
+    data.
+    Source : http://stackoverflow.com/questions/34510/what-is-a-race-condition
+
+2.  Deadlock:  occurs when a process or thread enters a waiting state because a
+    requested system resource is held by another waiting process, which in turn
+    is waiting for another resource held by another waiting process. If a
+    process is unable to change its state indefinitely because the resources
+    requested by it are being used by another waiting process, then the system
+    is said to be in a deadlock.
+    Source: https://en.wikipedia.org/wiki/Deadlock
+
+3.  Heisenbug(observer's effect)(Heisen-BUG): it alters or conceals characteristics
+    when researched. The best example would be an error that is encountered
+    in a release-mode compile but not found when researched in debug-mode.
+    This type of bug is often the result of a race condition. One reason for
+    this unusual behavior is due to the fact that performing an execution in
+    debug mode typically clears out the memory before the program launches,
+    forcing variables onto stack locations rather than maintaining them in registers.
+    Source; http://www.spamlaws.com/unusual-software-bugs.html
+
+4.  Floating point arithmetic challenges:
+     Floating point math is not exact. Simple values like 0.1 cannot be precisely
+     represented using binary floating point numbers, and the limited precision
+     of floating point numbers means that slight changes in the order of
+     operations or the precision of intermediates can change the result.
+
+  - Comparisons:  That means that comparing two floats to see if they are equal
+    is usually not what you want. See the following code:
+      float f = 0.1f;
+      float sum;
+      sum = 0;
+      for (int i = 0; i < 10; ++i)
+        sum += f;
+      float product = f * 10;
+      printf("sum = %1.15f, mul = %1.15f, mul2 = %1.15f\n", sum, product, f * 10);
+      This code tries to calculate ‘one’ in three different ways:
+      repeated adding, and two slight variants of multiplication.
+      Naturally we get three different results, and only one of them is 1.0:
+        >>sum=1.000000119209290, mul=1.000000000000000, mul2=1.000000014901161
+    Source: https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
+
+  - Definition of a zero and signed zeros: In our case if we have N digits precision
+    then 0f would be represented as N times zero (floating point representation)
+    and a positive zero +0 represents a number bigger than zero that is not representable
+    with the given precision N, this is a number that has zeros in the first N spots
+    and then an integer in the N+1 position. The case of negative zero occurs when
+    the number is negative and has a non zero integer in the N+a position. So for
+    example the following code:
+      double x = 1e-200;
+      double y = 1e-200 * x;
+      printf("Log of +0: %gn", log(y));
+      y = -1e-200*x;
+      printf("Log of -0: %gn", log(y));
+    Gives as output:
+      >>Log of +0: -inf
+      >>Log of -0: -inf
+    Source: http://www.johndcook.com/blog/2010/06/15/why-computers-have-signed-zero/
+
+  - Cancellation or loss of significance: It occurs when an operation on two
+    numbers increases relative error substantially more than it increases absolute
+    error, for example in subtracting two nearly equal numbers (known as catastrophic cancellation).
+    **Remember the first lectures of Numerical Programming 1!!
+    Source: https://en.wikipedia.org/wiki/Loss_of_significance
+
+  - Amplification and error propagation: Once error estimates have been assigned
+    to each piece of data, we must then find out how these errors contribute to the
+    error in the result. The error in a quantity may be thought of as a variation
+    or "change" in the value of that quantity. Results are is obtained by mathematical
+    operations on the data, and small changes in any data quantity can affect the
+    value of a result. We say that "errors in the data propagate through the calculations
+    to produce error in the result."
+    **Again remember the first lectures of Num Prog. where we talk about changing
+    order of operations to obtain a better result
+    Source: https://www.lhup.edu/~dsimanek/scenario/errorman/propagat.htm

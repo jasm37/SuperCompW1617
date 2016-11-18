@@ -1,0 +1,92 @@
+AMG2013 is a parallel algebraic multigrid solver for linear systems arising from
+problems on unstructured grids. It trys to model the communication and computation patterns
+common in a domain of computational science. It is ment for Laplace type problems on unstructured domains. It is an SPMD code which uses MPI. 
+Paralleliaztion is achived by Data decomposition which is achived by subdividing the grid into logical P x Q x R (in 3D)
+chunks of equal size. Parallel efficiency is largely determined by the size
+of those data "chunks"(because we want a good ration beetween communication and computations), and the speed of communications and
+computations on the machine. Memory-access speeds also have a large impact on performance.
+
+relative-residual stopping criteria: ||r_k||_2 / ||b||_2 < tol tol=10^-6
+
+3D Problems:
+1) Laplace type problem on an unstructured domain with an anisotropy in one part. The default problem size is 384 unknowns
+   A 2-dimensional projection of the grid with the corresponding 2-dimensional stencils are given
+2) - cx u_xx - cy u_yy - cz u_zz = (1/h)^2, Dirichlet BC of u = 0, standard finite differences used to discretize-7-pt stencils in 3D
+3) Solves a Laplace type problem using a 27-point stencil.
+4) - a(x,y,z)(u_xx + u_yy = u_zz) = (1/h)^2
+
+pcg.c			functions for the conjugate gradient algorithm
+gmres.c			functions for the GMRES algorithm
+par_amg.c par_amg_setup.c Setup phase of the AMG preconditioner
+many                    coarsening algorithms
+many                    interpolation algorithms  
+par_rap.c		generates coarse grid operator
+par_amg_solve.c 	Solve phase of the AMG preconditioner
+par_cycle.c		AMG cycle
+par_relax.c		AMG smoothers
+
+IJ_mv			Linear algebraic interface routines 
+krylov			Krylov solvers, such as PCG and GMRES
+parcsr_ls		routines needed to generate solvers and preconditioners - generate Problems 2-4
+parcsr_mv		parallel matrix and vector routines 
+seq_mv			sequential matrix and vector routines
+sstruct_mv, struct_mv   semistructured matrix and vector routines - generate Problem 1
+		
+
+global partitioning VS. assumed partitioning
+
+All compiler and link options are set by modifying the file 'amg2013/Makefile.include' appropriately.
+
+assumed partition - recommended for several thousand processors or more - add '-DHYPRE_NO_GLOBAL_PARTITION' 
+solve problems that are larger than 2^31-1 - add '-DHYPRE_LONG_LONG'
+-DTIMER_USE_MPI -DHYPRE_USING_OPENMP
+
+!!!Scalability and Results!!!
+1) Increasing both problem size and number of processors in tandem = local size constant
+   For larg number of processor it will roughly stay constant
+
+!!!RUN!!!
+mpirun -np 1 amg2013
+mpirun -np 8 amg2013 -pooldist 1 P 1 1 1 -r 4 4 4 -printstats
+  -P <Px> <Py> <Pz>   : define processor topology per part, problem 1 - 8*Px*Py*Pz MPI processes!
+  -laplace            : 3D Laplace problem on a cube PROBLEM 2
+  -printsystem        : print out the system
+  -pooldist <p>       : pool distribution to use
+  -r <rx> <ry> <rz>   : refine part(s) for default problem
+  -b <bx> <by> <bz>   : refine and block part(s) for default problem
+  -n <nx> <ny> <nz>   : define size per processor for problems on cube
+  -c <cx> <cy> <cz>   : define anisotropies for Laplace problem
+  -solver <ID>        : 
+                        0 - PCG with AMG precond
+                        1 - PCG with diagonal scaling
+                        2 - GMRES(10) with AMG precond
+                        3 - GMRES(10) with diagonal scaling
+PROBLEM 1
+Partitioning 0/1, both lead to a load balanced distribution of the original problem
+The problem size per MPI process can be increased
+      `-r' - defines the refinement factor for the grid on each process in each direction
+      '-b' - increases the number of blocks per process. 
+      1 - 8*Px*Py*Pz MPI processes
+PROBLEM 2,3,4 - laplace, 27pt and jumps
+      `-n' - local problem size per MPI process, global problem size <Px>*<nx> by <Py>*<ny> by <Pz>*<nz>.
+
+
+!!!TEST RUNS!!!
+mpirun -np <8*px*py*pz> amg2013 -pooldist 1 -r 12 12 12 -P px py pz 
+82,944 variables per MPI process, total system size of 663,552*px*py*pz
+mpirun -np <8*px*py*pz> amg2013 -pooldist 1 -r 24 24 24 -P px py pz 
+7pt 3D Laplace problem
+mpirun -np <px*py*pz> amg2013 -laplace -n 40 40 40 -P px py pz
+64,000 grid points per MPI process, domain of the size 40*px x 40*py x 40*pz
+mpirun -np <px*py*pz> amg2013 -laplace -n 80 80 80 -P px py pz
+512,000 grid points per MPI process, domain of the size 80*px x 80*py x 80*pz
+
+
+!!!OUTCOMES!!!
+PCG Solve:
+PCG Solve  wall clock time = 0.103601 seconds
+PCG Solve  cpu clock time  = 0.140000 seconds
+Iterations = 8
+System Size * Iterations / Solve Phase Time: 8.539842e+06
+
+

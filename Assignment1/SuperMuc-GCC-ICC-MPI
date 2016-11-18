@@ -1,0 +1,74 @@
+TASKS_PER_NODE must be less or equal 40 for fat nodes
+Typically there are two ways of specifying the job size:
+Total tasks and number of nodes
+Tasks per node and number of nodes
+
+llsubmit	Submit a job script for execution.
+llq	Check the status of your job(s).
+llhold	Place a hold on a job
+llcancel	Cancel a job.
+llclass	Query information about job classes.
+
+# This job command file is called job.cmd
+#@ input = job.in
+#@ output = job.out
+#@ error = job.err
+#@ job_type = parallel
+#@ class = general
+#@ node = 8
+#@ total_tasks=128
+#@ network.MPI = sn_all,not_shared,us
+#@ ... other LoadLeveler keywords (see below)
+#@ queue
+echo "JOB is run"
+
+#@ job_type=serial | parallel | MPICH
+MPICH - Must be used when running jobs with Intel MPI.
+#@ class = class_name
+Job classes on SuperMUC Thin Nodes (Phase 1) - test
+
+GNU Compiler Collection
+module load gcc/<version>
+module avail gcc will give you an overview over available versions.
+module load mpi.<flavor>/<version>_gcc 
+Invocation of the C compiler is via the gcc command, and of the C++ compiler via the g++ command.
+
+MPI INTEL
+module unload mpi.ibm 
+module load mpi.intel
+The compiler used by Intel MPI default module is the Intel Fortran/C/C++ suite
+mpi.intel/5.0_gcc
+mpi.intel/5.1_gcc
+The system GCC (4.3) as well as at least a subset of LRZ-provided gcc modules are supported. 
+The desired gcc module must be loaded prior to the Intel MPI one.
+mpiexec -n 32 ./myprog.exe
+srun -n 32 ./myprog.exe
+the number of cores used by each MPI task is usually equal to the number of OpenMP threads to be used by that task
+export OMP_NUM_THREADS=4
+
+!!!PRAGMAS!!!
+We can just Vectorize loops that don't carry any loop dependecy
+#pragma simd pragma is used to enforce loop vectorization. The compiler generates a warning when it is unable to vectorize the loop
+
+#pragma ivdep auto-vectorization hint that provids a data-dependence assertion and 
+it leaves to the compiler to decide whether the auto-vectorization optimization should be applied to the loop. Actual vectorization is still under the discretion of the compiler.
+Instructs the compiler to ignore assumed vector dependencies. The proven dependencies that prevent vectorization are not ignored, only assumed dependencies are ignored.
+instructs the compiler to ignore assumed vector dependencies in loops that are vectorization targets
+
+#pragma vector indicates that the loop should be vectorized, takes several argument keywords to specify the kind of loop vectorization.
+ignoring normal heuristic decisions about profitability, 
+Override compiler options on loop vectorization and force vectorization if it is legal to do so.
+If the compiler is 100% certain there is a dependency in the loop it will ignore this directive
+mask_readwrite the compiler generates masked loads and stores within all conditions in the loop.
+aligned/unaligned indicates that the loop should be vectorized using aligned/unaligned data movement instructions for all array references
+
+#pragma loop_count informs the compiler of the iterations to be expected for a loop. The compiler attempts to determine the number of iterations for a loop AND the work within that loop to determine if vectorizing the loop is "profitable" - that is, is there a performance benefit for vectorizing this loop given the overhead associated with creating this as a vectorized loop.
+
+#pragma nofusion - prevents the loop fusion optimization.
+
+#pragma distribute_point - Instructs the compiler to prefer loop distribution at the location indicated.
+ All loop-carried dependencies are ignore
+
+#pragam inline,forceinline,noinline - gives fine grain control on the compiler inlining heuristics
+
+

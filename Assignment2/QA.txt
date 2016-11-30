@@ -1,0 +1,10 @@
+3.1 Explain errors: which are not exclusive to parallel programming
+
+Race Condition:
+Deadlock:
+Heisenbug:
+
+Float comparisons:
+Definition of zero/signed zeros:
+Cancellation/loss significance:
+Amplification/error propagation:

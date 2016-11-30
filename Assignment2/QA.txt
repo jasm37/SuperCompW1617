@@ -1,10 +1,37 @@
 3.1 Explain errors: which are not exclusive to parallel programming
 
-Race Condition:
-Deadlock:
-Heisenbug:
+        Race Condition:
+        Deadlock:
+        Heisenbug:
 
-Float comparisons:
-Definition of zero/signed zeros:
-Cancellation/loss significance:
-Amplification/error propagation:
+        Float comparisons:
+        Definition of zero/signed zeros:
+        Cancellation/loss significance:
+        Amplification/error propagation:
+
+
+5.1 TotalView Gui components:
+
+         Session Manager
+        • Root Window
+        • Process Window
+        – Stack Trace Pane
+        – Stack Frame Pane
+        – Source Pane
+        – Action Points, Processes, Threads Pane
+        • Variable Window
+        
+6.1 operations with TotalView
+
+        Control execution
+        Setting breakpoints
+        Diving into functions
+        View memory
+        
+7.1 how variables changes 
+        initialize
+        sets control variables
+        array: name, visualize
+        
+8.1 core& thread numver justification
+        before and after openmp fork-join

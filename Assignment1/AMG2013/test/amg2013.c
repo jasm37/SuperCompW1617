@@ -2436,7 +2436,7 @@ main( int   argc,
        * Solve the system using ParCSR version of PCG
        *-----------------------------------------------------------*/
        //TODO
-      
+      printf("\n solver_id = %i", solver_id);
       if ((solver_id > -1) && (solver_id < 2))
       {
          time_index = hypre_InitializeTiming("PCG Setup");

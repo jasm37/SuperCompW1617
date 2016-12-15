@@ -1,0 +1,25 @@
+SUBMISSION: VIDEO + FILES
+
+VIDEO COMMENTARY
+  3.2 Provided Baseline
+    Discuss:
+    1.  Gaussian Elim.
+    2.  Changes done in Load Leveler batch script
+    3.  Challenges to get accurate baseline time in GE
+    4.  Computation and MPI scalability fixed/changing process count and fixed/changing input set
+
+  4.2 MPI Point-to-Point Communication
+    1.  Which non-blocking operations were used?
+    2.  Was communication and computation overlap achieved?
+    3.  Was a speedup observed versus baseline?
+
+  5.2 MPI One-Sided Comm.
+    1.  Which one-sided op. were used?
+    2.  Was comm. and computation overlap achieved?(how?)
+    3.  Was speedup observed versus baseline?
+    4.  Was speedup observed versus non-blocking version?
+
+FILES:
+  3.1 Load-Leveler batch script and performance plots in PDF format
+  4.1 Updated gauss.c and new performance plots in PDF format
+  5.1 updated gauss.c and new performance plots in PDF format

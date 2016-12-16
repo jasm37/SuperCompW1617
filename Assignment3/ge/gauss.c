@@ -113,12 +113,12 @@ int main(int argc, char** argv) {
 		for(i = 1; i < size; i++){
 			MPI_Isend(&rows, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &req);
 			MPI_Isend(&columns, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &req);
-			MPI_Wait(&req, &status);
+			MPI_Wait(&req,&status);
 		}
 	} else {
 		MPI_Irecv(&rows, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &req);
 		MPI_Irecv(&columns, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &req);
-		MPI_Wait(&req, &status);
+		MPI_Wait(&req,&status);
 	}	// overlap communication with different buffers, do row transmission while doing columns one
 
 	//	Matrix A will be divided in groups of rows(chunks) and each group sent to each process
@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
 		for(i = 1; i < size; i++){
 			MPI_Isend((matrix_1D_mapped + (i * (local_block_size * rows))), (local_block_size * rows), MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &req);
 			MPI_Isend((rhs + (i * local_block_size)), local_block_size, MPI_DOUBLE, i, 1, MPI_COMM_WORLD, &req);
-			MPI_Wait(&status, &req);
+			MPI_Wait(&req,&status);	
 		}
 		for(i = 0; i < local_block_size * rows; i++){
 			matrix_local_block[i] = matrix_1D_mapped[i];
@@ -158,7 +158,7 @@ int main(int argc, char** argv) {
 	} else {
 		MPI_Irecv(matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &req);
 		MPI_Irecv(rhs_local_block, local_block_size, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &req);
-		MPI_Wait(&status, &req);
+		MPI_Wait(&req,&status);
 	}// Here Irecv for the two recv's since allocating data takes time but they are unrelated!
 
 	setup_time = MPI_Wtime() - setup_start;

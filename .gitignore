@@ -1,3 +1,6 @@
 **.o
 **.ods#
-/AMG2013/.metadata
+~/.metadata
+~/.settings/
+~/.cproject
+~/.project

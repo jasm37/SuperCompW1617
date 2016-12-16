@@ -156,8 +156,8 @@ int main(int argc, char** argv) {
 			rhs_local_block[i] = rhs[i];
 		}
 	} else {
-		MPI_Irecv(matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status, &req);
-		MPI_Irecv(rhs_local_block, local_block_size, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &status, &req);
+		MPI_Irecv(matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &req);
+		MPI_Irecv(rhs_local_block, local_block_size, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &req);
 		MPI_Wait(&status, &req);
 	}// Here Irecv for the two recv's since allocating data takes time but they are unrelated!
 

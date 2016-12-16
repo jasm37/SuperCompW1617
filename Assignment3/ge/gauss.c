@@ -18,6 +18,7 @@ int main(int argc, char** argv) {
 	//	Files to read
 	FILE *matrix_file, *vector_file, *solution_file;
 	MPI_Status status;     
+	MPI_Request req;
 
 	if( argc != 2 ) { 
 		perror("The base name of the input matrix and vector files must be given\n"); 
@@ -110,13 +111,15 @@ int main(int argc, char** argv) {
 	//	Rank 0 sends number of rows and columns and the other processes receive them
 	if(rank == 0) {
 		for(i = 1; i < size; i++){
-			MPI_Send(&rows, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
-			MPI_Send(&columns, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+			MPI_Isend(&rows, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &req);
+			MPI_Isend(&columns, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &req);
+			MPI_Wait(&req, &status);
 		}
 	} else {
-		MPI_Recv(&rows, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-		MPI_Recv(&columns, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
-	}	
+		MPI_Irecv(&rows, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status, &req);
+		MPI_Irecv(&columns, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status, &req);
+		MPI_Wait(&req, &status);
+	}	// overlap communication with different buffers, do row transmission while doing columns one
 
 	//	Matrix A will be divided in groups of rows(chunks) and each group sent to each process
 	//	The same is done for the vectors x and b
@@ -142,8 +145,9 @@ int main(int argc, char** argv) {
 	//	send/receive respective chunk of data of A and rhs b to each process
 	if(rank == 0) {
 		for(i = 1; i < size; i++){
-			MPI_Send((matrix_1D_mapped + (i * (local_block_size * rows))), (local_block_size * rows), MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
-			MPI_Send((rhs + (i * local_block_size)), local_block_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+			MPI_Isend((matrix_1D_mapped + (i * (local_block_size * rows))), (local_block_size * rows), MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &req);
+			MPI_Isend((rhs + (i * local_block_size)), local_block_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &req);
+			MPI_Wait(&status, &req);
 		}
 		for(i = 0; i < local_block_size * rows; i++){
 			matrix_local_block[i] = matrix_1D_mapped[i];
@@ -152,9 +156,10 @@ int main(int argc, char** argv) {
 			rhs_local_block[i] = rhs[i];
 		}
 	} else {
-		MPI_Recv(matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
-		MPI_Recv(rhs_local_block, local_block_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
-	}
+		MPI_Irecv(matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status, &req);
+		MPI_Irecv(rhs_local_block, local_block_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status, &req);
+		MPI_Wait(&status, &req);
+	}// Here Irecv for the two recv's since allocating data takes time but they are unrelated!
 
 	setup_time = MPI_Wtime() - setup_start;
 	kernel_start = MPI_Wtime();

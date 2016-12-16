@@ -5,12 +5,17 @@
 #include <mpi.h>
 
 int main(int argc, char** argv) {
-
+	//	A * x = b
+	//	Matrix Names
 	char matrix_name[200], vector_name[200], solution_name[200];
+	//	Global rows and columns of A, # processes and rank
 	int rows, columns, size, rank;
+	//	**pointer to matrix A, *pointer to matrix A in vector form, respective *pointers to rhs b and solution x
 	double **matrix_2d_mapped, *matrix_1D_mapped, *rhs, *solution;
+	//	Times to measure
 	double total_time, io_time = 0, setup_time, kernel_time, mpi_time = 0;
 	double total_start, io_start, setup_start, kernel_start, mpi_start;
+	//	Files to read
 	FILE *matrix_file, *vector_file, *solution_file;
 	MPI_Status status;     
 
@@ -27,6 +32,7 @@ int main(int argc, char** argv) {
 	sprintf(vector_name,   "%s.vec", argv[1]);
 	sprintf(solution_name, "%s.sol", argv[1]);
 
+	//	Basic MPI initialization
 	MPI_Init(&argc, &argv); 
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -40,7 +46,9 @@ int main(int argc, char** argv) {
 
 	total_start = MPI_Wtime();
 
+	//	Index for loops in next if-statement
 	int row, column, index;
+	//	Some memory allocations, reads and basic assertions
 	if(rank == 0) {
 		io_start = MPI_Wtime();
 		if ((matrix_file = fopen (matrix_name, "r")) == NULL) {
@@ -99,6 +107,7 @@ int main(int argc, char** argv) {
 	setup_start = MPI_Wtime();
 
 	int i;
+	//	Rank 0 sends number of rows and columns and the other processes receive them
 	if(rank == 0) {
 		for(i = 1; i < size; i++){
 			MPI_Send(&rows, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
@@ -109,17 +118,28 @@ int main(int argc, char** argv) {
 		MPI_Recv(&columns, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
 	}	
 
-	int local_block_size = rows / size;
-	int process, column_pivot;
+	//	Matrix A will be divided in groups of rows(chunks) and each group sent to each process
+	//	The same is done for the vectors x and b
 
+	//	local_block_size is the number of rows each process is going to work with
+	int local_block_size = rows / size;
+
+	int process, column_pivot;
 	double tmp, pivot;
+	//	contains all entries of its chunk of the matrix A
 	double *matrix_local_block = (double *) malloc(local_block_size * rows * sizeof(double));
+	//	contains the chunk of the rhs b
 	double *rhs_local_block = (double *) malloc(local_block_size * sizeof(double));
+	//	(to be sent/received) contains in order: rank, chunk of A, chunk of rhs
 	double *pivots = (double *) malloc((local_block_size + (rows * local_block_size) + 1) * sizeof(double));
+	//	contains normalized rhs b after one step of GE (divided by pivot)
 	double *local_work_buffer = (double *) malloc(local_block_size * sizeof(double));
+	//	(to be sent/received) contains in order: position in rows, rhs b in such positions (for example [3,4,b_3,b_4])
 	double *accumulation_buffer = (double *) malloc(local_block_size * 2 * sizeof(double));
+	//	contains chunk of already computed solution x
 	double *solution_local_block = (double *) malloc(local_block_size * sizeof(double));
 
+	//	send/receive respective chunk of data of A and rhs b to each process
 	if(rank == 0) {
 		for(i = 1; i < size; i++){
 			MPI_Send((matrix_1D_mapped + (i * (local_block_size * rows))), (local_block_size * rows), MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
@@ -139,6 +159,7 @@ int main(int argc, char** argv) {
 	setup_time = MPI_Wtime() - setup_start;
 	kernel_start = MPI_Wtime();
 
+	//	receive *pivots from previous ranks, make its chunk of A upper triangular and recompute rhs b
 	for(process = 0; process < rank; process++) {
 		mpi_start = MPI_Wtime();
 		MPI_Recv(pivots, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status);
@@ -158,6 +179,7 @@ int main(int argc, char** argv) {
 		}
 	}
 
+	//	performs GE for its chunk of A and rhs b
 	for(row = 0; row < local_block_size; row++){
 		column_pivot = (rank * local_block_size) + row;
 		index = row * rows;
@@ -182,6 +204,7 @@ int main(int argc, char** argv) {
 		}
 	}
 
+	//	send *pivots
 	for (process = (rank + 1); process < size; process++) {
 		pivots[0] = (double) rank;
 		mpi_start = MPI_Wtime();
@@ -189,6 +212,7 @@ int main(int argc, char** argv) {
 		mpi_time += MPI_Wtime() - mpi_start;
 	} 
 
+	//	receive chunks of rhs b after GE
 	for (process = (rank + 1); process<size; ++process) {
 		mpi_start = MPI_Wtime();
 		MPI_Recv( accumulation_buffer, (2 * local_block_size), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status); 
@@ -202,6 +226,7 @@ int main(int argc, char** argv) {
 		}
 	}
 
+	//	compute local solutions(chunk of x)
 	for (row = (local_block_size - 1); row >= 0; row--) {
 		index = rank * local_block_size + row;
 		accumulation_buffer[row] = (double) index;
@@ -211,12 +236,14 @@ int main(int argc, char** argv) {
 		}
 	}
 
+	//	send chunks of rhs b after GE to other ranks
 	for (process = 0; process < rank; process++){
 		mpi_start = MPI_Wtime();
 		MPI_Send( accumulation_buffer, (2 * local_block_size), MPI_DOUBLE, process, rank, MPI_COMM_WORLD); 
 		mpi_time += MPI_Wtime() - mpi_start;
 	}
 
+	//	send/receive solutions
 	if(rank == 0) {
 		for(i = 0; i < local_block_size; i++){
 			solution[i] = solution_local_block[i];
@@ -234,6 +261,7 @@ int main(int argc, char** argv) {
 
 	kernel_time = MPI_Wtime() - kernel_start;
 
+	//	basic assertions and results
 	if (rank == 0) {
 		io_start = MPI_Wtime();
 		if ((solution_file = fopen(solution_name, "w+")) == NULL) {

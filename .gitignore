@@ -1,6 +1,6 @@
 **.o
 **.ods#
-~/.metadata
-~/.settings/
-~/.cproject
-~/.project
+.metadata
+.settings/
+.cproject
+.project

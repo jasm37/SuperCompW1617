@@ -54,6 +54,10 @@ end
 grid on
 %legend(h([1 3 5 7 9]),{'i/o','setup','compute','mpi','total'});
 legend('i/o','setup var','setup','compute var','compute','mpi var','mpi','total var', 'total')
+
+% uses http://de.mathworks.com/matlabcentral/fileexchange/1039-hline-and-vline
+vline(8), vline(16), vline(32), vline(64)
+
 hold off;
 
 end

@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
 		for(i = 1; i < size; i++){
 			MPI_Isend((matrix_1D_mapped + (i * (local_block_size * rows))), (local_block_size * rows), MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &req);
 			MPI_Isend((rhs + (i * local_block_size)), local_block_size, MPI_DOUBLE, i, 1, MPI_COMM_WORLD, &req);
-			MPI_Wait(&req,&status);	
+			//MPI_Wait(&req,&status);
 		}
 		for(i = 0; i < local_block_size * rows; i++){
 			matrix_local_block[i] = matrix_1D_mapped[i];
@@ -155,6 +155,7 @@ int main(int argc, char** argv) {
 		for(i = 0; i < local_block_size; i++){
 			rhs_local_block[i] = rhs[i];
 		}
+		MPI_Wait(&req,&status);
 	} else {
 		MPI_Irecv(matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &req);
 		MPI_Irecv(rhs_local_block, local_block_size, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &req);
@@ -164,7 +165,7 @@ int main(int argc, char** argv) {
 	setup_time = MPI_Wtime() - setup_start;
 	kernel_start = MPI_Wtime();
 
-	//	receive *pivots from previous ranks, make its chunk of A upper triangular and recompute rhs b
+	//	receive *pivots from previous ranks, and update its chunk of A and rhs b with respect to the other chunks
 	for(process = 0; process < rank; process++) {
 		mpi_start = MPI_Wtime();
 		MPI_Recv(pivots, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status);
@@ -184,7 +185,7 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	//	performs GE for its chunk of A and rhs b
+	//	performs GE for its chunk of A and rhs b making the matrix upper triangular until its chunk of A
 	for(row = 0; row < local_block_size; row++){
 		column_pivot = (rank * local_block_size) + row;
 		index = row * rows;
@@ -255,12 +256,12 @@ int main(int argc, char** argv) {
 		}
 		mpi_start = MPI_Wtime();
 		for(i = 1; i < size; i++){
-			MPI_Recv(solution + (i * local_block_size), local_block_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
+			MPI_Irecv(solution + (i * local_block_size), local_block_size, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &req);
 		}
 		mpi_time += MPI_Wtime() - mpi_start;
 	} else {
 		mpi_start = MPI_Wtime();
-		MPI_Send(solution_local_block, local_block_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+		MPI_Isend(solution_local_block, local_block_size, MPI_DOUBLE, 0, rank, MPI_COMM_WORLD, &req);
 		mpi_time += MPI_Wtime() - mpi_start;
 	}
 
@@ -273,7 +274,7 @@ int main(int argc, char** argv) {
 			perror("Could not open the solution file");
 			MPI_Abort(MPI_COMM_WORLD, -1);
 		}
-
+		//MPI_Wait(&req, &status);
 		fprintf(solution_file, "%d\n", rows);
 		for(i = 0; i < rows; i++) {
 			fprintf(solution_file, "%f ", solution[i]);

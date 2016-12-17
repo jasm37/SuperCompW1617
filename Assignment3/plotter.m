@@ -14,6 +14,7 @@ Numproc = [8,16,32,64];
 Sample = zeros(1,n-3);
 Means = zeros(length(Numproc),n-3);
 Variances = zeros(length(Numproc),n-3);
+colours=['y','m','g','b','r'];
 
 for P = Psizes
 k=1;
@@ -36,17 +37,21 @@ for j = Numproc
     k=k+j;
     i=i+1;
 end
+Means(:,1) = Means(:,1).*(Numproc.');
 
 figure; hold on;
 title(sprintf('Strong scaling for problem size %d',P))
 xlabel('number of processors')
 ylabel('time')
-for i = 2:size(Means,2)
-    semilogy(Numproc,Means(:,i))
-    patch([Numproc fliplr(Numproc)],[Means(:,i)+Variances(:,i) fliplr(Means(:,i)-Variances(:,i))],[0.7 0.7 0.7]);
+for i = 1:size(Means,2)
+    % shaded variance corridor uses external function 
+    % https://de.mathworks.com/matlabcentral/fileexchange/27485-boundedline-m?s_tid=srchtitle
+    %plot(Numproc,Means(:,i))
+    boundedline( Numproc, Means(:,i), sqrt(Variances(:,i)), ...
+        colours(i) )
 end
 grid on
-legend('setup','compute','mpi','total')
+legend('i/o','-','setup','setup var','compute','compute var','mpi','mpi var','total', 'tatal var')
 hold off;
 
 end

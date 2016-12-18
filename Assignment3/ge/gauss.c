@@ -156,7 +156,7 @@ int main(int argc, char** argv) {
 		for(i = 0; i < local_block_size; i++){
 			rhs_local_block[i] = rhs[i];
 		}
-		MPI_Waitall(2*size,req_send,&status);
+		MPI_Waitall(2*size-2,req_send,&status);
 	} else {
 		MPI_Irecv(matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &req_rec[0]);
 		MPI_Irecv(rhs_local_block, local_block_size, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &req_rec[1]);

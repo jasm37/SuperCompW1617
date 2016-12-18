@@ -262,7 +262,7 @@ int main(int argc, char** argv) {
 		mpi_time += MPI_Wtime() - mpi_start;
 	} else {
 		mpi_start = MPI_Wtime();
-		MPI_Isend(solution_local_block, local_block_size, MPI_DOUBLE, 0, rank, MPI_COMM_WORLD, &req);
+		MPI_Isend(solution_local_block, local_block_size, MPI_DOUBLE, 0, rank, MPI_COMM_WORLD, &req_send[0]);
 		mpi_time += MPI_Wtime() - mpi_start;
 	}
 

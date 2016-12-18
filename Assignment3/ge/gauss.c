@@ -17,8 +17,7 @@ int main(int argc, char** argv) {
 	double total_start, io_start, setup_start, kernel_start, mpi_start;
 	//	Files to read
 	FILE *matrix_file, *vector_file, *solution_file;
-	//MPI_Status status;
-	//MPI_Request req;
+	MPI_Request req;
 	MPI_Status status;
 	MPI_Status m_status[2];
 	MPI_Request req_rec[2];
@@ -115,9 +114,11 @@ int main(int argc, char** argv) {
 	//	Rank 0 sends number of rows and columns and the other processes receive them
 	if(rank == 0) {
 		for(i = 1; i < size; i++){
-			MPI_Isend(&rows, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &req_send[0]);
-			MPI_Isend(&columns, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &req_send[1]);
-			MPI_Waitall(2,req_send,m_status);
+			//MPI_Isend(&rows, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &req_send[0]);
+			//MPI_Isend(&columns, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &req_send[1]);
+			MPI_Send(&rows, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+			MPI_Send(&columns, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
+			//MPI_Waitall(2,req_send,m_status);
 		}
 		printf("\n After rows and columns matrix_1\n");
 	} else {

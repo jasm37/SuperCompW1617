@@ -66,6 +66,7 @@ int main(int argc, char** argv) {
 			MPI_Abort(MPI_COMM_WORLD, -1);
 		}  	
 		if(rows % size != 0) {
+			printf("rows = %d and size = %d", rows, size);
 			perror("The matrix should be divisible by the number of processes\n");
 			MPI_Abort(MPI_COMM_WORLD, -1);
 		}  	

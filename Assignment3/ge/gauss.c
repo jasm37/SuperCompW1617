@@ -17,7 +17,10 @@ int main(int argc, char** argv) {
 	double total_start, io_start, setup_start, kernel_start, mpi_start;
 	//	Files to read
 	FILE *matrix_file, *vector_file, *solution_file;
-	MPI_Status status;     
+	//MPI_Status status;
+	//MPI_Request req;
+	MPI_Status status;
+	MPI_Status m_status[2];
 	MPI_Request req_rec[2];
 	MPI_Request req_send[2];
 
@@ -114,13 +117,13 @@ int main(int argc, char** argv) {
 		for(i = 1; i < size; i++){
 			MPI_Isend(&rows, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &req_send[0]);
 			MPI_Isend(&columns, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &req_send[1]);
-			MPI_Waitall(2,req_send,&status);
+			MPI_Waitall(2,req_send,m_status);
 		}
 		printf("\n After rows and columns matrix_1\n");
 	} else {
 		MPI_Irecv(&rows, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &req_rec[0]);
 		MPI_Irecv(&columns, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &req_rec[1]);
-		MPI_Waitall(2,req_rec,&status);
+		MPI_Waitall(2,req_rec,m_status);
 	}	// overlap communication with different buffers, do row transmission while doing columns one
 
 	//	Matrix A will be divided in groups of rows(chunks) and each group sent to each process
@@ -158,11 +161,11 @@ int main(int argc, char** argv) {
 		for(i = 0; i < local_block_size; i++){
 			rhs_local_block[i] = rhs[i];
 		}
-		MPI_Waitall(2*size-2,req_send,&status);
+		//MPI_Waitall(2*size-2,req_send,&status);
 	} else {
 		MPI_Irecv(matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &req_rec[0]);
 		MPI_Irecv(rhs_local_block, local_block_size, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &req_rec[1]);
-		MPI_Waitall(2,req_rec,&status);
+		MPI_Waitall(2,req_rec,m_status);
 	}// Here Irecv for the two recv's since allocating data takes time but they are unrelated!
 	if(rank == 0){printf("\n After Isend matrix_1\n");};
 	setup_time = MPI_Wtime() - setup_start;

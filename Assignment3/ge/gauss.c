@@ -116,6 +116,7 @@ int main(int argc, char** argv) {
 			MPI_Isend(&columns, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &req_send[1]);
 			MPI_Waitall(2,req_send,&status);
 		}
+		printf("\n After rows and columns matrix_1\n");
 	} else {
 		MPI_Irecv(&rows, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &req_rec[0]);
 		MPI_Irecv(&columns, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &req_rec[1]);
@@ -145,6 +146,7 @@ int main(int argc, char** argv) {
 
 	//	send/receive respective chunk of data of A and rhs b to each process
 	if(rank == 0) {
+		printf("\n Isend matrix_1\n");
 		for(i = 1; i < size; i++){
 			MPI_Isend((matrix_1D_mapped + (i * (local_block_size * rows))), (local_block_size * rows), MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &req_send[0]);
 			MPI_Isend((rhs + (i * local_block_size)), local_block_size, MPI_DOUBLE, i, 1, MPI_COMM_WORLD, &req_send[1]);
@@ -162,7 +164,7 @@ int main(int argc, char** argv) {
 		MPI_Irecv(rhs_local_block, local_block_size, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &req_rec[1]);
 		MPI_Waitall(2,req_rec,&status);
 	}// Here Irecv for the two recv's since allocating data takes time but they are unrelated!
-
+	if(rank == 0){printf("\n After Isend matrix_1\n");};
 	setup_time = MPI_Wtime() - setup_start;
 	kernel_start = MPI_Wtime();
 

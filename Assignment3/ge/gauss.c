@@ -258,7 +258,7 @@ int main(int argc, char** argv) {
 		mpi_time += MPI_Wtime() - mpi_start;
 	}
 
-	MPI_Request many_req[size-1];
+	MPI_Request *many_req = (MPI_Request *) malloc( (size-1)*sizeof(MPI_Request));
 	MPI_Status many_status[size-1];
 	//	send/receive solutions
 	if(rank == 0) {
@@ -268,9 +268,8 @@ int main(int argc, char** argv) {
 		mpi_start = MPI_Wtime();
 		for(i = 1; i < size; i++){
 			//MPI_Recv(solution + (i * local_block_size), local_block_size, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &status);
-			MPI_Irecv(solution + (i * local_block_size), local_block_size, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &many_req[i-1]);
+			MPI_Irecv(solution + (i * local_block_size), local_block_size, MPI_DOUBLE, i, i, MPI_COMM_WORLD, many_req[i-1]);
 		}
-		MPI_Waitall(size-1,many_req,many_status);
 		mpi_time += MPI_Wtime() - mpi_start;
 	} else {
 		mpi_start = MPI_Wtime();
@@ -288,6 +287,7 @@ int main(int argc, char** argv) {
 			MPI_Abort(MPI_COMM_WORLD, -1);
 		}
 		//MPI_Wait(&req, &status);
+		MPI_Waitall(size-1,many_req,many_status);
 		fprintf(solution_file, "%d\n", rows);
 		for(i = 0; i < rows; i++) {
 			fprintf(solution_file, "%f ", solution[i]);

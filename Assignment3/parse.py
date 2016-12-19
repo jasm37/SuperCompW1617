@@ -1,6 +1,8 @@
 
 #scipt to parse output file into csv
 
+#args = getopt.getopt(argv,"hi:o:",["ifile="])
+
 inputfile = open('test_output.out');
 outputfile = open('64_8_2.csv','w');
 
@@ -24,10 +26,10 @@ for line in inputfile:
             newblock = 0
         problems=problemsizes[i]
         proc=procsizes[j]
-        line=line.replace(";",",",4)
+        line=line.replace(";","")
         line=line.replace("[R","")
         line=line.replace("]",",")
         times=line.split(' ')
-        outputfile.write('{}, {}, {} {} {} {} {} {}\n'.format(problems,proc,times[0],times[3],times[5],times[7],times[9],times[11]))
+        outputfile.write('{}, {}, {}, {}, {}, {}, {}, {}\n'.format(problems,proc,times[0],times[3],times[5],times[7],times[9],times[11]))
         
 #outputfile.close()

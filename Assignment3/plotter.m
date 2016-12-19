@@ -4,7 +4,7 @@
 %fileID = fopen('68_8.csv');
 %A = textscan(fileID, '%d %d %f %f %f %f %f %f','delimiter', ',', 'EmptyValue', 0);
 %A = dlmread('');
-A = csvread('64_8.csv');
+A = csvread('64_8_2.csv');
 
 %fclose(fileID);
 

@@ -268,7 +268,7 @@ int main(int argc, char** argv) {
 		mpi_start = MPI_Wtime();
 		for(i = 1; i < size; i++){
 			//MPI_Recv(solution + (i * local_block_size), local_block_size, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &status);
-			MPI_Irecv(solution + (i * local_block_size), local_block_size, MPI_DOUBLE, i, i, MPI_COMM_WORLD, many_req[i-1]);
+			MPI_Irecv(solution + (i * local_block_size), local_block_size, MPI_DOUBLE, i, i, MPI_COMM_WORLD, many_req+i-1);
 		}
 		mpi_time += MPI_Wtime() - mpi_start;
 	} else {

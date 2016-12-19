@@ -19,6 +19,9 @@ int main(int argc, char** argv) {
 	FILE *matrix_file, *vector_file, *solution_file;
 	MPI_Status status;     
 	MPI_Request req;
+	MPI_Status m_status[2];
+	MPI_Request req_rec[2];
+        MPI_Request req_send[2];
 
 	if( argc != 2 ) { 
 		perror("The base name of the input matrix and vector files must be given\n"); 
@@ -118,14 +121,15 @@ int main(int argc, char** argv) {
 	//	Rank 0 sends number of rows and columns and the other processes receive them
 	if(rank == 0) {
 		for(i = 1; i < size; i++){
-			MPI_Isend(&rows, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &req);
-			MPI_Isend(&columns, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &req);
-			MPI_Wait(&req,&status);
+		MPI_Isend(&rows, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &req_send[0]);
+                MPI_Isend(&columns, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &req_send[1]);
+		MPI_Request_free(&req_send[0]);
+MPI_Request_free(&req_send[1]);
 		}
 	} else {
-		MPI_Irecv(&rows, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status, &req);
-		MPI_Irecv(&columns, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &status, &req);
-		MPI_Wait(&req,&status);
+		MPI_Irecv(&rows, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &req_rec[0]);
+		MPI_Irecv(&columns, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &req_rec[1]);
+MPI_Waitall(2,req_rec,m_status);
 	}	// overlap communication with different buffers, do row transmission while doing columns one
 
 	//	Matrix A will be divided in groups of rows(chunks) and each group sent to each process
@@ -152,9 +156,9 @@ int main(int argc, char** argv) {
 	
 	// --- PUT DATA INTO WINDOWS ---
 	MPI_Win_allocate(rows * rows * sizeof(double), sizeof(double), MPI_INFO_NULL, MPI_COMM_WORLD, &matrix_1D_mapped, &win1);
-	MPI_win_fence(0,win1);
+	MPI_Win_fence(0,win1);
 	MPI_Win_allocate(rows * sizeof(double), sizeof(double), MPI_INFO_NULL, MPI_COMM_WORLD, &rhs, &win2);
-	MPI_win_fence(0,win2);
+	MPI_Win_fence(0,win2);
 
 	//	send/receive respective chunk of data of A and rhs b to each process
 	if(rank == 0) {
@@ -176,9 +180,9 @@ int main(int argc, char** argv) {
 		
 		// --- RECEIVE FROM SHARED ---
 		MPI_Get(matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, 0, local_block_size * rows, MPI_DOUBLE, win1 );
-		MPI_win_fence(0,win1);
+		MPI_Win_fence(0,win1);
 		MPI_Get(rhs_local_block, local_block_size, MPI_DOUBLE, 0, 0, local_block_size, MPI_DOUBLE, win2 );
-		MPI_win_fence(0,win2);
+		MPI_Win_fence(0,win2);
 		
 		
 	}// Here Irecv for the two recv's since allocating data takes time but they are unrelated!
@@ -193,7 +197,7 @@ int main(int argc, char** argv) {
 		// --- GET PIVOTS ---
 		//MPI_Recv(pivots, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status);
 		MPI_Get(pivots, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, process,  process, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, win1 );
-		MPI_win_fence(0,win1);
+		MPI_Win_fence(0,win1);
 		
 		mpi_time += MPI_Wtime() - mpi_start;
                 
@@ -244,7 +248,7 @@ int main(int argc, char** argv) {
 		// --- ALLOCATE PIVOTS ---
 		//MPI_Send( pivots, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, process, rank, MPI_COMM_WORLD);
 		MPI_Win_allocate((local_block_size * rows + local_block_size + 1) * sizeof(double), sizeof(double), MPI_INFO_NULL, MPI_COMM_WORLD, &pivots, &win1);
-		MPI_win_fence(0,win1);
+		MPI_Win_fence(0,win1);
 		
 		
 		mpi_time += MPI_Wtime() - mpi_start;
@@ -257,7 +261,7 @@ int main(int argc, char** argv) {
 		// --- GET RHS CHUNKS ---
 		//MPI_Recv( accumulation_buffer, (2 * local_block_size), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status); 
 		MPI_Get( accumulation_buffer, (2 * local_block_size), MPI_DOUBLE, process, process, (2 * local_block_size), MPI_DOUBLE, win1 );
-		MPI_win_fence(0,win1);
+		MPI_Win_fence(0,win1);
 		
 		mpi_time += MPI_Wtime() - mpi_start;
 
@@ -286,14 +290,14 @@ int main(int argc, char** argv) {
 		// --- ALLOC RHS CHUNKS ---
 		//MPI_Send( accumulation_buffer, (2 * local_block_size), MPI_DOUBLE, process, rank, MPI_COMM_WORLD);
 		MPI_Win_allocate((2 * local_block_size) * sizeof(double), sizeof(double), MPI_INFO_NULL, MPI_COMM_WORLD, &accumulation_buffer, &win1);
-		MPI_win_fence(0,win1); 
+		MPI_Win_fence(0,win1); 
 		
 		mpi_time += MPI_Wtime() - mpi_start;
 	}
 
 	//	send/receive solutions
 	// --- ALLOC AND GET ---
-	MPI_win_fence(0,win1); 
+	MPI_Win_fence(0,win1); 
 	if(rank == 0) {
 		for(i = 0; i < local_block_size; i++){
 			solution[i] = solution_local_block[i];
@@ -311,7 +315,7 @@ int main(int argc, char** argv) {
 		MPI_Win_allocate(local_block_size * sizeof(double), sizeof(double), MPI_INFO_NULL, MPI_COMM_WORLD, &solution_local_block, &win1);
 		mpi_time += MPI_Wtime() - mpi_start;
 	}
-        MPI_win_fence(0,win1); 
+        MPI_Win_fence(0,win1); 
         
 	kernel_time = MPI_Wtime() - kernel_start;
 

@@ -295,7 +295,7 @@ int main(int argc, char** argv) {
 			MPI_Abort(MPI_COMM_WORLD, -1);
 		}
 		//MPI_Wait(&req, &status);
-		MPI_Waitall(size-1,many_req,many_status);
+		//MPI_Waitall(size-1,many_req,many_status);
 		fprintf(solution_file, "%d\n", rows);
 		for(i = 0; i < rows; i++) {
 			fprintf(solution_file, "%f ", solution[i]);

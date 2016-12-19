@@ -349,8 +349,8 @@ int main(int argc, char** argv) {
 	free(accumulation_buffer);
 	free(solution_local_block);
 	//free allocated requests and statuses
-	free(many_req);
-	free(many_status);
+	//free(many_req);
+	//free(many_status);
 	MPI_Finalize(); 
 	return 0;
 }

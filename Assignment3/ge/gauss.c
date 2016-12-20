@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
 	//	Rank 0 sends number of rows and columns and the other processes receive them
 	//Window parameters and setup
 	MPI_Win test_win;
-	MPI_group all_group = MPI_COMM_WORLD;
+	MPI_Group all_group = MPI_COMM_WORLD;
 	int dim[2];
 	//	Rank 0 sends number of rows and columns and the other processes receive them
 	if(rank == 0) {

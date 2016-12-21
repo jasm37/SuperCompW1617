@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
 		//int dim[2];
 		dim[0] = rows; dim[1]=columns;
 		//	only rank zero has a nonzero buffer "dim" at start
-		MPI_Win_create(dim, 2*sizeof(int), sizeof(int), MPI_INFO_NULL, all_group, &test_win);
+		MPI_Win_create(dim, 2*sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &test_win);
 		MPI_Win_fence(0, test_win);
 		//	wait for message to be read with GET from the other ranks!
 		MPI_Win_fence(0, test_win);

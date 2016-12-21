@@ -4,6 +4,7 @@
 %fileID = fopen('68_8.csv');
 %A = textscan(fileID, '%d %d %f %f %f %f %f %f','delimiter', ',', 'EmptyValue', 0);
 %A = dlmread('');
+%   Reads this file, so make sure it is in the working folder!
 A = csvread('64_8_2.csv');
 
 %fclose(fileID);
@@ -14,7 +15,7 @@ Numproc = [8,16,32,64];
 Sample = zeros(1,n-3);
 Means = zeros(length(Numproc),n-3);
 Variances = zeros(length(Numproc),n-3);
-colours=['m','g','b','r'];
+colours=['m','g','b','r','c','y'];
 
 for P = Psizes
 k=1;
@@ -54,7 +55,7 @@ end
 grid on
 %legend(h([1 3 5 7 9]),{'i/o','setup','compute','mpi','total'});
 legend('i/o','setup var','setup','compute var','compute','mpi var','mpi','total var', 'total')
-
+%legend('i/o','setup','compute','mpi','total')
 % uses http://de.mathworks.com/matlabcentral/fileexchange/1039-hline-and-vline
 vline(8), vline(16), vline(32), vline(64)
 

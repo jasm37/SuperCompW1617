@@ -132,10 +132,7 @@ int main(int argc, char** argv) {
 		MPI_Win_fence(0, test_win);
 		rows = dim[0];
 		columns = dim[1];
-		//MPI_Irecv(&rows, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &req_rec[0]);
-		//MPI_Irecv(&columns, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &req_rec[1]);
-		//MPI_Waitall(2,req_rec,m_status);
-	}	// overlap communication with different buffers, do row transmission while doing columns one
+	}
 	//MPI_Win_free(&test_win);
 
 	//	local_block_size is the number of rows each process is going to work with
@@ -466,4 +463,3 @@ int main(int argc, char** argv) {
 	MPI_Finalize(); 
 	return 0;
 }
-

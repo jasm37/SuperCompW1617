@@ -22,6 +22,7 @@ int main(int argc, char** argv) {
 	MPI_Status m_status[2];
 	MPI_Request req_rec[2];
 	MPI_Request req_send[2];
+	MPI_Group all_group;
 
 	if( argc != 2 ) { 
 		perror("The base name of the input matrix and vector files must be given\n"); 
@@ -40,6 +41,7 @@ int main(int argc, char** argv) {
 	MPI_Init(&argc, &argv); 
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
+	MPI_Comm_group(MPI_COMM_WORLD, &all_group);
 
 	if(rank == 0){
 		printf("Solving the Ax=b system with Gaussian Elimination:\n");
@@ -115,7 +117,7 @@ int main(int argc, char** argv) {
 	//	Rank 0 sends number of rows and columns and the other processes receive them
 	//Window parameters and setup
 	MPI_Win test_win;
-	MPI_Group all_group = MPI_COMM_WORLD;
+	//MPI_Group all_group = MPI_COMM_WORLD;
 	int dim[2];
 	//	Rank 0 sends number of rows and columns and the other processes receive them
 	if(rank == 0) {
@@ -196,10 +198,37 @@ int main(int argc, char** argv) {
 	setup_time = MPI_Wtime() - setup_start;
 	kernel_start = MPI_Wtime();
 
+	//if (rank !=0){
+		int *m_rank = (int *) malloc(sizeof(int) * (size-rank));
+		MPI_Group *m_group = (MPI_Group *)malloc(sizeof(MPI_Group) * (rank+1));
+
+		//	create array of numbers of processes
+		for ( process = size-1; process >= rank; process--){
+			m_rank[process] = process;
+		}
+		//	create groups per rank
+		for ( process = 0; process <= rank; process++){
+			//m_rank[process] = size-process;
+			MPI_Group_incl(all_group, size-rank, m_rank+ rank , m_group[process] );
+		}
+	//}
+
+	MPI_Win pivot_win;
+	MPI_Win_create(NULL,(local_block_size + (rows * local_block_size) + 1) * sizeof(double) , sizeof(double), MPI_INFO_NULL,MPI_COMM_WORLD ,&pivot_win);
 	//	receive *pivots from previous ranks, and update its chunk of A and rhs b with respect to the other chunks
 	for(process = 0; process < rank; process++) {
 		mpi_start = MPI_Wtime();
-		MPI_Recv(pivots, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status);
+		//	create group
+		// 	MPI_Win_post(group)
+		//	MPI_Win_wait(group)
+		//MPI_Group_incl(all_group, rank, m_rank , m_group[process] );	//might be wrong so check afterwards!
+		//MPI_Win_post(m_group[process], 0, pivot_win);
+		//MPI_Win_wait(pivot_win);
+		MPI_Win_start(m_group[process], 0, pivot_win);
+		MPI_Get(pivots,local_block_size + (rows * local_block_size) + 1, MPI_DOUBLE, process,1 , local_block_size + (rows * local_block_size) + 1, MPI_DOUBLE, pivot_win );
+		MPI_Win_complete(pivot_win);
+
+		//MPI_Recv(pivots, (localblock_size * rows + local_block_size + 1), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status);
 		mpi_time += MPI_Wtime() - mpi_start;
 
 		for(row = 0; row < local_block_size; row++){
@@ -243,13 +272,22 @@ int main(int argc, char** argv) {
 
 	//MPI_Request rank_req[];
 	//	send *pivots
+	/**
 	for (process = (rank + 1); process < size; process++) {
 		pivots[0] = (double) rank;
 		mpi_start = MPI_Wtime();
+		//	fence
+		//	MPI_Put();
+		//	fence
 		MPI_Isend( pivots, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, process, rank, MPI_COMM_WORLD,&req);
 		mpi_time += MPI_Wtime() - mpi_start;
 		MPI_Request_free(&req);
 	} 
+	**/
+	mpi_start = MPI_Wtime();
+	MPI_Win_post(m_group[rank], 0, pivot_win);
+	MPI_Win_wait(pivot_win);
+	mpi_time += MPI_Wtime() - mpi_start;
 
 	//	receive chunks of rhs b after GE
 	for (process = (rank + 1); process<size; ++process) {

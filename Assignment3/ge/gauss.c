@@ -214,7 +214,7 @@ int main(int argc, char** argv) {
 	//}
 
 	MPI_Win pivot_win;
-	MPI_Win_create(NULL,0 , sizeof(double), MPI_INFO_NULL,MPI_COMM_WORLD ,&pivot_win);
+	MPI_Win_create(pivot,(local_block_size + (rows * local_block_size) + 1) * sizeof(double) , sizeof(double), MPI_INFO_NULL,MPI_COMM_WORLD ,&pivot_win);
 	//	receive *pivots from previous ranks, and update its chunk of A and rhs b with respect to the other chunks
 	printf("\nInside rank %d in part 0\n", rank);
 	for(process = 0; process < rank; process++) {

@@ -214,8 +214,9 @@ int main(int argc, char** argv) {
 	//}
 
 	MPI_Win pivot_win;
-	MPI_Win_create(NULL,(local_block_size + (rows * local_block_size) + 1) * sizeof(double) , sizeof(double), MPI_INFO_NULL,MPI_COMM_WORLD ,&pivot_win);
+	MPI_Win_create(NULL,0 , sizeof(double), MPI_INFO_NULL,MPI_COMM_WORLD ,&pivot_win);
 	//	receive *pivots from previous ranks, and update its chunk of A and rhs b with respect to the other chunks
+	printf("\nInside rank %d in part 0\n", rank);
 	for(process = 0; process < rank; process++) {
 		mpi_start = MPI_Wtime();
 		//	create group
@@ -224,10 +225,13 @@ int main(int argc, char** argv) {
 		//MPI_Group_incl(all_group, rank, m_rank , m_group[process] );	//might be wrong so check afterwards!
 		//MPI_Win_post(m_group[process], 0, pivot_win);
 		//MPI_Win_wait(pivot_win);
+		printf("\nInside rank %d in part 1\n", rank);
 		MPI_Win_start(m_group[process], 0, pivot_win);
+		printf("\nInside rank %d in part 2\n", rank);
 		MPI_Get(pivots,local_block_size + (rows * local_block_size) + 1, MPI_DOUBLE, process,1 , local_block_size + (rows * local_block_size) + 1, MPI_DOUBLE, pivot_win );
+		printf("\nInside rank %d in part 3\n", rank);
 		MPI_Win_complete(pivot_win);
-
+		printf("\nInside rank %d in part 4\n", rank);
 		//MPI_Recv(pivots, (localblock_size * rows + local_block_size + 1), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status);
 		mpi_time += MPI_Wtime() - mpi_start;
 
@@ -245,6 +249,7 @@ int main(int argc, char** argv) {
 		}
 	}
 
+	printf("\nInside rank %d in part 5\n", rank);
 	//	performs GE for its chunk of A and rhs b making the matrix upper triangular until its chunk of A
 	for(row = 0; row < local_block_size; row++){
 		column_pivot = (rank * local_block_size) + row;
@@ -284,9 +289,13 @@ int main(int argc, char** argv) {
 		MPI_Request_free(&req);
 	} 
 	**/
+	printf("\nInside rank %d in part 6\n", rank);
 	mpi_start = MPI_Wtime();
+	printf("\nInside rank %d in part 7\n", rank);
 	MPI_Win_post(m_group[rank], 0, pivot_win);
+	printf("\nInside rank %d in part 8\n", rank);
 	MPI_Win_wait(pivot_win);
+	printf("\nInside rank %d in part 9\n", rank);
 	mpi_time += MPI_Wtime() - mpi_start;
 
 	//	receive chunks of rhs b after GE

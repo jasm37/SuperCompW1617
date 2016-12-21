@@ -225,6 +225,7 @@ int main(int argc, char** argv) {
 		//MPI_Group_incl(all_group, rank, m_rank , m_group[process] );	//might be wrong so check afterwards!
 		//MPI_Win_post(m_group[process], 0, pivot_win);
 		//MPI_Win_wait(pivot_win);
+		/**
 		printf("\nInside rank %d in part 1\n", rank);
 		MPI_Win_start(m_group[process], 0, pivot_win);
 		printf("\nInside rank %d in part 2\n", rank);
@@ -232,6 +233,10 @@ int main(int argc, char** argv) {
 		printf("\nInside rank %d in part 3\n", rank);
 		MPI_Win_complete(pivot_win);
 		printf("\nInside rank %d in part 4\n", rank);
+		**/
+		MPI_Win_post(m_group[process], 0, pivot_win);
+		MPI_Win_wait(pivot_win);
+		mpi_time += MPI_Wtime() - mpi_start;
 		//MPI_Recv(pivots, (localblock_size * rows + local_block_size + 1), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status);
 		mpi_time += MPI_Wtime() - mpi_start;
 
@@ -277,18 +282,20 @@ int main(int argc, char** argv) {
 
 	//MPI_Request rank_req[];
 	//	send *pivots
-	/**
+	MPI_Win_start(m_group[process], 0, pivot_win);
 	for (process = (rank + 1); process < size; process++) {
 		pivots[0] = (double) rank;
 		mpi_start = MPI_Wtime();
 		//	fence
 		//	MPI_Put();
+		MPI_Put(pivots,local_block_size + (rows * local_block_size) + 1, MPI_DOUBLE, process,1 , local_block_size + (rows * local_block_size) + 1, MPI_DOUBLE, pivot_win );
 		//	fence
-		MPI_Isend( pivots, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, process, rank, MPI_COMM_WORLD,&req);
+		//MPI_Isend( pivots, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, process, rank, MPI_COMM_WORLD,&req);
 		mpi_time += MPI_Wtime() - mpi_start;
 		MPI_Request_free(&req);
 	} 
-	**/
+	MPI_Win_complete(pivot_win);
+	/**
 	printf("\nInside rank %d in part 6\n", rank);
 	mpi_start = MPI_Wtime();
 	printf("\nInside rank %d in part 7\n", rank);
@@ -297,7 +304,7 @@ int main(int argc, char** argv) {
 	MPI_Win_wait(pivot_win);
 	printf("\nInside rank %d in part 9\n", rank);
 	mpi_time += MPI_Wtime() - mpi_start;
-
+	**/
 	//	receive chunks of rhs b after GE
 	for (process = (rank + 1); process<size; ++process) {
 		mpi_start = MPI_Wtime();

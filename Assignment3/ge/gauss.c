@@ -313,6 +313,7 @@ int main(int argc, char** argv) {
 	**/
 	//	receive chunks of rhs b after GE
 	for (process = (rank + 1); process<size; ++process) {
+		printf("\nInside rank %d, part end 2\n", rank);
 		mpi_start = MPI_Wtime();
 		MPI_Recv( accumulation_buffer, (2 * local_block_size), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status); 
 		mpi_time += MPI_Wtime() - mpi_start;
@@ -324,7 +325,7 @@ int main(int argc, char** argv) {
 			}
 		}
 	}
-
+	printf("\nInside rank %d, part end 3\n", rank);
 	//	compute local solutions(chunk of x)
 	for (row = (local_block_size - 1); row >= 0; row--) {
 		index = rank * local_block_size + row;

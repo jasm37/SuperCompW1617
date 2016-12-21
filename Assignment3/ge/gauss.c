@@ -199,15 +199,15 @@ int main(int argc, char** argv) {
 	kernel_start = MPI_Wtime();
 
 	//if (rank !=0){
-		int *m_rank = (int *) malloc(sizeof(int) * (size-rank));
-		MPI_Group *m_group = (MPI_Group *)malloc(sizeof(MPI_Group) * (rank+1));
+		int *m_rank = (int *) malloc(sizeof(int) * (size));
+		MPI_Group *m_group = (MPI_Group *)malloc(sizeof(MPI_Group) * (size));
 
 		//	create array of numbers of processes
-		for ( process = size-1; process >= rank; process--){
+		for ( process = size-1; process >= 0; process--){
 			m_rank[process] = process;
 		}
 		//	create groups per rank
-		for ( process = 0; process <= rank; process++){
+		for ( process = 0; process <= size-1; process++){
 			//m_rank[process] = size-process;
 			MPI_Group_incl(all_group, size-process, m_rank+ process , m_group+process );
 		}

@@ -209,7 +209,7 @@ int main(int argc, char** argv) {
 		//	create groups per rank
 		for ( process = 0; process <= rank; process++){
 			//m_rank[process] = size-process;
-			MPI_Group_incl(all_group, size-rank, m_rank+ rank , m_group[process] );
+			MPI_Group_incl(all_group, size-rank, m_rank+ rank , m_group+process );
 		}
 	//}
 

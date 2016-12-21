@@ -234,8 +234,11 @@ int main(int argc, char** argv) {
 		MPI_Win_complete(pivot_win);
 		printf("\nInside rank %d in part 4\n", rank);
 		**/
+		printf("\nInside rank %d, part 1\n", rank);
 		MPI_Win_post(m_group[process], 0, pivot_win);
+		printf("\nInside rank %d, part 2\n", rank);
 		MPI_Win_wait(pivot_win);
+		printf("\nInside rank %d, part 3\n", rank);
 		mpi_time += MPI_Wtime() - mpi_start;
 		//MPI_Recv(pivots, (localblock_size * rows + local_block_size + 1), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status);
 		mpi_time += MPI_Wtime() - mpi_start;
@@ -254,7 +257,7 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	printf("\nInside rank %d in part 5\n", rank);
+	printf("\nInside rank %d in part 4\n", rank);
 	//	performs GE for its chunk of A and rhs b making the matrix upper triangular until its chunk of A
 	for(row = 0; row < local_block_size; row++){
 		column_pivot = (rank * local_block_size) + row;
@@ -282,8 +285,10 @@ int main(int argc, char** argv) {
 
 	//MPI_Request rank_req[];
 	//	send *pivots
+	printf("\nInside rank %d, part 5\n", rank);
 	MPI_Win_start(m_group[process], 0, pivot_win);
 	for (process = (rank + 1); process < size; process++) {
+		printf("\nInside rank %d, part 123\n", rank);
 		pivots[0] = (double) rank;
 		mpi_start = MPI_Wtime();
 		//	fence
@@ -292,9 +297,10 @@ int main(int argc, char** argv) {
 		//	fence
 		//MPI_Isend( pivots, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, process, rank, MPI_COMM_WORLD,&req);
 		mpi_time += MPI_Wtime() - mpi_start;
-		MPI_Request_free(&req);
+		//MPI_Request_free(&req);
 	} 
 	MPI_Win_complete(pivot_win);
+	printf("\nInside rank %d, part end\n", rank);
 	/**
 	printf("\nInside rank %d in part 6\n", rank);
 	mpi_start = MPI_Wtime();

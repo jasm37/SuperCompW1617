@@ -225,7 +225,7 @@ int main(int argc, char** argv) {
 		//MPI_Group_incl(all_group, rank, m_rank , m_group[process] );	//might be wrong so check afterwards!
 		//MPI_Win_post(m_group[process], 0, pivot_win);
 		//MPI_Win_wait(pivot_win);
-		/**
+
 		printf("\nInside rank %d in part 1\n", rank);
 		MPI_Win_start(m_group[process], 0, pivot_win);
 		printf("\nInside rank %d in part 2\n", rank);
@@ -233,13 +233,14 @@ int main(int argc, char** argv) {
 		printf("\nInside rank %d in part 3\n", rank);
 		MPI_Win_complete(pivot_win);
 		printf("\nInside rank %d in part 4\n", rank);
-		**/
+
+		/**
 		printf("\nInside rank %d, part 1\n", rank);
 		MPI_Win_post(m_group[process], 0, pivot_win);
 		printf("\nInside rank %d, part 2\n", rank);
 		MPI_Win_wait(pivot_win);
 		printf("\nInside rank %d, part 3\n", rank);
-		mpi_time += MPI_Wtime() - mpi_start;
+		**/
 		//MPI_Recv(pivots, (localblock_size * rows + local_block_size + 1), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status);
 		mpi_time += MPI_Wtime() - mpi_start;
 
@@ -286,6 +287,7 @@ int main(int argc, char** argv) {
 	//MPI_Request rank_req[];
 	//	send *pivots
 	printf("\nInside rank %d, part 5\n", rank);
+	/**
 	MPI_Win_start(m_group[process], 0, pivot_win);
 	for (process = (rank + 1); process < size; process++) {
 		printf("\nInside rank %d, part 123\n", rank);
@@ -300,8 +302,9 @@ int main(int argc, char** argv) {
 		//MPI_Request_free(&req);
 	} 
 	MPI_Win_complete(pivot_win);
+	**/
 	printf("\nInside rank %d, part end\n", rank);
-	/**
+
 	printf("\nInside rank %d in part 6\n", rank);
 	mpi_start = MPI_Wtime();
 	printf("\nInside rank %d in part 7\n", rank);
@@ -310,14 +313,14 @@ int main(int argc, char** argv) {
 	MPI_Win_wait(pivot_win);
 	printf("\nInside rank %d in part 9\n", rank);
 	mpi_time += MPI_Wtime() - mpi_start;
-	**/
+
 	//	receive chunks of rhs b after GE
 	for (process = (rank + 1); process<size; ++process) {
 		printf("\nInside rank %d, part end 2\n", rank);
 		mpi_start = MPI_Wtime();
 		MPI_Recv( accumulation_buffer, (2 * local_block_size), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status); 
 		mpi_time += MPI_Wtime() - mpi_start;
-
+		printf("\nInside rank %d, part 2.5\n", rank);
 		for (row  = (local_block_size - 1); row >= 0; row--) {
 			for (column = (local_block_size - 1);column >= 0; column--) {
 				index = (int) accumulation_buffer[column];

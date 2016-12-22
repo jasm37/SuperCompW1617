@@ -7,7 +7,7 @@ Numproc = [8,16,32,64];
 Sample = zeros(1,n-3);
 Means = zeros(length(Psizes),n-3);
 Variances = zeros(length(Psizes),n-3);
-colours=['m','g','b','r'];
+colours=['m','g','b','r','c','y'];
 
 for N = Numproc
 k=1;
@@ -49,7 +49,7 @@ grid on
 %legend(h([1 3 5 7 9]),{'i/o','setup','compute','mpi','total'});
 legend('i/o','setup var','setup','compute var','compute','mpi var','mpi','total var', 'total')
 % uses http://de.mathworks.com/matlabcentral/fileexchange/1039-hline-and-vline
-vline(8), vline(16), vline(32), vline(64)
+vline(64), vline(512), vline(1024), vline(2048), vline(4096), vline(8192)
 hold off;
 
 end

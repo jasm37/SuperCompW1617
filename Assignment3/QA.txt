@@ -41,7 +41,8 @@ first MPI_Recv(pivot) comm. for computation is done.
         A:  Not as much as wanted. Some overlap done thanks to Isend but no Irecv. The problem for Recv is
             that the buffer is inmediatly used so cannot make nonblock(Irecv)
     3.  Was a speedup observed versus baseline?
-        A:  A little speedup thanks to I/O comm. improvement(Isend)
+        A:  A little speedup thanks to I/O comm. improvement(Isend) but not much because of lack of overlap
+            of comm and computation
 
   5.2 MPI One-Sided Comm.
     1.  Which one-sided op. were used?

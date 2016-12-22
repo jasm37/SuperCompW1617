@@ -4,14 +4,45 @@ VIDEO COMMENTARY
   3.2 Provided Baseline
     Discuss:
     1.  Gaussian Elim.
+GE is a direct algorithm for solving linear systems of equations. It consistis from bringing matrix, 
+that describes system, to upper
+triangular form and then backward substitution. The first part is O(n^3) complex and second is O(n^2), 
+so we should consider the first as a dominant one. 
+Here, the parallel implementation performs algorithm in row echelon form. Each rank perfrom operations 
+on the block of the matrix that contains several sequential full rows of the matix. On of the problems 
+here is that each next rank depends on the results of the previous one. The second problem is load leveling,
+meaning that ranks with upper part of the matrix bring it to the trigular form frirst and finish work earlier,
+so they stay idle most of the time. (It is better distribute rows in alternating fashion)
+        
     2.  Changes done in Load Leveler batch script
+We don't have much. We can put everyting in a loop. For using trace-analyzer we put mpiexec -trace ...
+    
     3.  Challenges to get accurate baseline time in GE
+The algorithm is not level-loaded (see 3.2.1) and there is a big variance across processors for both 
+communication and computation.
+Also rank num.0 is different and has all i/o and less setup. Finally, the physical location of nodes 
+impacts communication time.
+    
     4.  Computation and MPI scalability fixed/changing process count and fixed/changing input set
+Comment on behaviour of the plots, make it short
+
+    5. Compute and MPI times scalability with fixed input sets and varying process counts
+It is called strong scalability. To check scalability we plot times of computation, communicataion, 
+total work  versus number pf processrs. We could see that for problem sizes under 2096 the optimal 
+number of processes is 32, with quick time growth for 64 procesors.
+Also comment on V shape plots, where the first communications(rank 0 to everyone) are done and then the 
+first MPI_Recv(pivot) comm. for computation is done.
+
 
   4.2 MPI Point-to-Point Communication
     1.  Which non-blocking operations were used?
+        A:  Mentioned in the slides, explain a little bit about each(blocking, nonblocking)
     2.  Was communication and computation overlap achieved?
+        A:  Not as much as wanted. Some overlap done thanks to Isend but no Irecv. The problem for Recv is
+            that the buffer is inmediatly used so cannot make nonblock(Irecv)
     3.  Was a speedup observed versus baseline?
+        A:  A little speedup thanks to I/O comm. improvement(Isend) but not much because of lack of overlap
+            of comm and computation
 
   5.2 MPI One-Sided Comm.
     1.  Which one-sided op. were used?

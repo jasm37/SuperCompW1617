@@ -115,13 +115,15 @@ int main(int argc, char** argv) {
 	//	Rank 0 sends number of rows and columns and the other processes receive them
 	if(rank == 0) {
 		for(i = 1; i < size; i++){
-			//MPI_Isend(&rows, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &req_send[0]);
-			//MPI_Isend(&columns, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &req_send[1]);
-			MPI_Send(&rows, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
-			MPI_Send(&columns, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
+			MPI_Isend(&rows, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &req_send[0]);
+			MPI_Isend(&columns, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &req_send[1]);
+			//MPI_Isend(&rows, 1, MPI_INT, i, 0, MPI_COMM_WORL);
+			//MPI_Isend(&columns, 1, MPI_INT, i, 1, MPI_COMM_WORLD);
 			//MPI_Waitall(2,req_send,m_status);
+			MPI_Request_free(&req_send[0]);
+			MPI_Request_free(&req_send[1]);
 		}
-		printf("\n After rows and columns matrix_1\n");
+		//printf("\n After rows and columns matrix_1\n");
 	} else {
 		MPI_Irecv(&rows, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &req_rec[0]);
 		MPI_Irecv(&columns, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &req_rec[1]);
@@ -151,10 +153,12 @@ int main(int argc, char** argv) {
 
 	//	send/receive respective chunk of data of A and rhs b to each process
 	if(rank == 0) {
-		printf("\n Isend matrix_1\n");
+		//printf("\n Isend matrix_1\n");
 		for(i = 1; i < size; i++){
 			MPI_Isend((matrix_1D_mapped + (i * (local_block_size * rows))), (local_block_size * rows), MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &req_send[0]);
 			MPI_Isend((rhs + (i * local_block_size)), local_block_size, MPI_DOUBLE, i, 1, MPI_COMM_WORLD, &req_send[1]);
+			MPI_Request_free(&req_send[0]);
+			MPI_Request_free(&req_send[1]);
 			//MPI_Wait(&req,&status);
 		}
 		for(i = 0; i < local_block_size * rows; i++){
@@ -169,7 +173,7 @@ int main(int argc, char** argv) {
 		MPI_Irecv(rhs_local_block, local_block_size, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, &req_rec[1]);
 		MPI_Waitall(2,req_rec,m_status);
 	}// Here Irecv for the two recv's since allocating data takes time but they are unrelated!
-	if(rank == 0){printf("\n After Isend matrix_1\n");};
+	//if(rank == 0){printf("\n After Isend matrix_1\n");};
 	setup_time = MPI_Wtime() - setup_start;
 	kernel_start = MPI_Wtime();
 
@@ -218,12 +222,14 @@ int main(int argc, char** argv) {
 		}
 	}
 
+	//MPI_Request rank_req[];
 	//	send *pivots
 	for (process = (rank + 1); process < size; process++) {
 		pivots[0] = (double) rank;
 		mpi_start = MPI_Wtime();
-		MPI_Send( pivots, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, process, rank, MPI_COMM_WORLD);
+		MPI_Isend( pivots, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, process, rank, MPI_COMM_WORLD,&req);
 		mpi_time += MPI_Wtime() - mpi_start;
+		MPI_Request_free(&req);
 	} 
 
 	//	receive chunks of rhs b after GE
@@ -253,9 +259,13 @@ int main(int argc, char** argv) {
 	//	send chunks of rhs b after GE to other ranks
 	for (process = 0; process < rank; process++){
 		mpi_start = MPI_Wtime();
-		MPI_Send( accumulation_buffer, (2 * local_block_size), MPI_DOUBLE, process, rank, MPI_COMM_WORLD); 
+		MPI_Isend( accumulation_buffer, (2 * local_block_size), MPI_DOUBLE, process, rank, MPI_COMM_WORLD,&req);
 		mpi_time += MPI_Wtime() - mpi_start;
+		MPI_Request_free(&req);
 	}
+
+	//MPI_Request *many_req = (MPI_Request *) malloc( (size-1)*sizeof(MPI_Request));
+	//MPI_Status *many_status = (MPI_Status *) malloc( (size-1)*sizeof(MPI_Status));
 
 	//	send/receive solutions
 	if(rank == 0) {
@@ -265,12 +275,14 @@ int main(int argc, char** argv) {
 		mpi_start = MPI_Wtime();
 		for(i = 1; i < size; i++){
 			MPI_Recv(solution + (i * local_block_size), local_block_size, MPI_DOUBLE, i, i, MPI_COMM_WORLD, &status);
+			//MPI_Irecv(solution + (i * local_block_size), local_block_size, MPI_DOUBLE, i, i, MPI_COMM_WORLD, many_req+i-1);
 		}
 		mpi_time += MPI_Wtime() - mpi_start;
 	} else {
 		mpi_start = MPI_Wtime();
 		MPI_Isend(solution_local_block, local_block_size, MPI_DOUBLE, 0, rank, MPI_COMM_WORLD, &req_send[0]);
 		mpi_time += MPI_Wtime() - mpi_start;
+		MPI_Request_free(&req_send[0]);
 	}
 
 	kernel_time = MPI_Wtime() - kernel_start;
@@ -283,6 +295,7 @@ int main(int argc, char** argv) {
 			MPI_Abort(MPI_COMM_WORLD, -1);
 		}
 		//MPI_Wait(&req, &status);
+		//MPI_Waitall(size-1,many_req,many_status);
 		fprintf(solution_file, "%d\n", rows);
 		for(i = 0; i < rows; i++) {
 			fprintf(solution_file, "%f ", solution[i]);
@@ -335,8 +348,9 @@ int main(int argc, char** argv) {
 	free(local_work_buffer);
 	free(accumulation_buffer);
 	free(solution_local_block);
-
+	//free allocated requests and statuses
+	//free(many_req);
+	//free(many_status);
 	MPI_Finalize(); 
 	return 0;
 }
-

@@ -24,18 +24,24 @@ Also rank num.0 is different and has all i/o and less setup. Finally, the physic
 impacts communication time.
     
     4.  Computation and MPI scalability fixed/changing process count and fixed/changing input set
-It is called weak scalability...
+Comment on behaviour of the plots, make it short
 
     5. Compute and MPI times scalability with fixed input sets and varying process counts
 It is called strong scalability. To check scalability we plot times of computation, communicataion, 
 total work  versus number pf processrs. We could see that for problem sizes under 2096 the optimal 
 number of processes is 32, with quick time growth for 64 procesors.
+Also comment on V shape plots, where the first communications(rank 0 to everyone) are done and then the 
+first MPI_Recv(pivot) comm. for computation is done.
 
 
   4.2 MPI Point-to-Point Communication
     1.  Which non-blocking operations were used?
+        A:  Mentioned in the slides, explain a little bit about each(blocking, nonblocking)
     2.  Was communication and computation overlap achieved?
+        A:  Not as much as wanted. Some overlap done thanks to Isend but no Irecv. The problem for Recv is
+            that the buffer is inmediatly used so cannot make nonblock(Irecv)
     3.  Was a speedup observed versus baseline?
+        A:  A little speedup thanks to I/O comm. improvement(Isend)
 
   5.2 MPI One-Sided Comm.
     1.  Which one-sided op. were used?

@@ -3,23 +3,55 @@ Last assignment ;)
 2.1 Submit updated GE with collective commands
 2.2 Questions:
     1.  Which patterns were identified and replaced with collective communication?
-
+        A:  Between Bcast, and others ???
     2.  Were you able to identify any potential for overlap and used any non-blocking collectives?
-
-    3.  Was there any measurable performance or scalability improvement as a result of these changesß
-
+        A:  No idea yet how to change the recv inside the loops
+    3.  Was there any measurable performance or scalability improvement as a result of these changes?
+        A:  ???
     4.  Is the resulting code easier to understand and maintain after the changes? Why?
-
+        A:  Yes, the reduction of MPI lines/commands makes it easier to read and mantain
 3.1 Submit updated GE with IO commands
 3.2 Questions:
     1.  Which MPI-IO operations were applied to transform the code? Explain choices
 
     2.  What is "Data-Sieving" and "2 Phase IO"? How do they help improve IO performance?
+        A:
+            **Data Sieving: Sources : http://home.agh.edu.pl/~kzajac/ooc_tut/node6.html
+                                      http://www.mcs.anl.gov/~thakur/papers/romio-coll.pdf
+            It has been determined that many applications need to access a large number of small, noncontiguous pieces
+            of data from a file but for a good I/O performance, the size of an I/O request must be large (in the order of megabytes).
+            The I/O performance suffers considerably if applications access data by making MANY small I/O requests.
+            To reduce the effect of high I/O latency, it is critical to make as few requests to the file system as possible.
+            Data Sieving was introduced to solve these kind of problems: Instead of accessing each contiguous portion of the
+            data separately, a single contiguous chunk of data starting from the first requested byte up to the last
+            requested byte is read into a temporary buffer in memory (sort of a Cache).
+            Additionally, the requested portions of data are extracted and placed in the user's buffer.
+
+            A potential problem with this "simple" algorithm is memory requirement. The temporary buffer into which data
+            is first read must be as large as the total number of bytes between the first and last byte requested by the user.
+            To avoid this problem, the technique described above is performed in parts, reading only as much data at a time
+            as defined by a special parameter.
+            **Data Sieving cann also be used to write data..
+            **One could argue that most file systems perform sieving in the form of caching
+            >>> The advantage of data sieving is that data is always accessed in large chunks,
+                although at the cost of reading more data than needed.
+
+            **2 Phase IO: Source: http://www.mcs.anl.gov/~thakur/papers/romio-coll.pdf
+            Made with the intention of accessing distributed arrays from files. The local array of each process may be located
+            noncontiguously in the file. If each process tries to read each row of its local array individually, the performance
+            will be poor due to large number of small IO requests.
+            If the  IO access pattern is known to the implementation then data can accessed efficiently by splitting the access into
+            two phases:
+              I.  Processes access data assuming a distribution in memory that results in each process making one long continuous acces
+              II. Processes distribute the data among themselves according to a desired distribution.
+            >>The advantage is that making large, contiguous accesses, we IO time is reduced considerably. Although there might be a
+              small cost of communication between processes.
 
     3.  Was the original implementation scalable in terms of IO performance?
-
+        A:  ??
     4.  Was the original implementation scalable in terms of RAM storage?
-
+        A:  ??
     5.  How much of the communication in the application was replaced or eliminated with MPI IO?
-
+        A:  I suppose all the IO comm will be changed
     6.  Were there any performance improvements due to the change to MPI-IO?
+        A:  ??

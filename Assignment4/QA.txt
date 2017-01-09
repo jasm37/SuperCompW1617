@@ -1,0 +1,25 @@
+Last assignment ;)
+
+2.1 Submit updated GE with collective commands
+2.2 Questions:
+    1.  Which patterns were identified and replaced with collective communication?
+
+    2.  Were you able to identify any potential for overlap and used any non-blocking collectives?
+
+    3.  Was there any measurable performance or scalability improvement as a result of these changesß
+
+    4.  Is the resulting code easier to understand and maintain after the changes? Why?
+
+3.1 Submit updated GE with IO commands
+3.2 Questions:
+    1.  Which MPI-IO operations were applied to transform the code? Explain choices
+
+    2.  What is "Data-Sieving" and "2 Phase IO"? How do they help improve IO performance?
+
+    3.  Was the original implementation scalable in terms of IO performance?
+
+    4.  Was the original implementation scalable in terms of RAM storage?
+
+    5.  How much of the communication in the application was replaced or eliminated with MPI IO?
+
+    6.  Were there any performance improvements due to the change to MPI-IO?

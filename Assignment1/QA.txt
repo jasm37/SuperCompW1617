@@ -22,7 +22,8 @@
   A:
   // Wall clock time means difference between timestamps of start and finish of computations
   // CPU time is time spent by processor only, excluding time spent for input/output, idle time
-  // Solver time is time spent inside of the solution function in contrary to time spent on filling in matrix entries
+  // Solver time is time spent inside of the solution function in contrary to time spent on setting parameters (maxiteration, tol...) and setting preconditionar
+  // System Size * it / Solve Time
 
   Q:  Are any of the performance metrics compounded based on others
   A:  systemSize * #it / solveTime

@@ -3,7 +3,7 @@ Last assignment ;)
 2.1 Submit updated GE with collective commands
 2.2 Questions:
     1.  Which patterns were identified and replaced with collective communication?
-        A:  Between Bcast, and others ???
+        A:  Bcast was used to share sizes of problem, scatter was used to distibute parts of problem matrix, gather was used to asssemble solution together
     2.  Were you able to identify any potential for overlap and used any non-blocking collectives?
         A:  No idea yet how to change the recv inside the loops
     3.  Was there any measurable performance or scalability improvement as a result of these changes?

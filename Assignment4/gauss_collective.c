@@ -135,11 +135,25 @@ int main(int argc, char** argv) {
 	double *solution_local_block = (double *) malloc(local_block_size * sizeof(double));
 
 	//	send/receive respective chunk of data of A and rhs b to each process
-	
-	mpi_start = MPI_Wtime();
+		if(rank == 0) {
+		for(i = 1; i < size; i++){
+			MPI_Send((matrix_1D_mapped + (i * (local_block_size * rows))), (local_block_size * rows), MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+			MPI_Send((rhs + (i * local_block_size)), local_block_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+		}
+		for(i = 0; i < local_block_size * rows; i++){
+			matrix_local_block[i] = matrix_1D_mapped[i];
+		}
+		for(i = 0; i < local_block_size; i++){
+			rhs_local_block[i] = rhs[i];
+		}
+	} else {
+		MPI_Recv(matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
+		MPI_Recv(rhs_local_block, local_block_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
+	}
+	/* mpi_start = MPI_Wtime();
 	MPI_Scatter( matrix_1D_mapped, local_block_size * rows, MPI_DOUBLE, matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	MPI_Scatter( rhs, local_block_size, MPI_DOUBLE, rhs_local_block, local_block_size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        mpi_time += MPI_Wtime() - mpi_start;
+        mpi_time += MPI_Wtime() - mpi_start;*/
 
 	setup_time = MPI_Wtime() - setup_start;
 	kernel_start = MPI_Wtime();
@@ -229,10 +243,23 @@ int main(int argc, char** argv) {
 	}
 
 	//	send/receive solutions
-	
-	mpi_start = MPI_Wtime();
-	MPI_Gather(solution_local_block, local_block_size, MPI_DOUBLE, solution, rows*rows , MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	mpi_time += MPI_Wtime() - mpi_start;
+		if(rank == 0) {
+		for(i = 0; i < local_block_size; i++){
+			solution[i] = solution_local_block[i];
+		}
+		mpi_start = MPI_Wtime();
+		for(i = 1; i < size; i++){
+			MPI_Recv(solution + (i * local_block_size), local_block_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
+		}
+		mpi_time += MPI_Wtime() - mpi_start;
+	} else {
+		mpi_start = MPI_Wtime();
+		MPI_Send(solution_local_block, local_block_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+		mpi_time += MPI_Wtime() - mpi_start;
+	}
+	/* mpi_start = MPI_Wtime();
+	MPI_Gather(solution_local_block, local_block_size, MPI_DOUBLE, solution, local_block_size*size , MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	mpi_time += MPI_Wtime() - mpi_start;*/
 	
 	kernel_time = MPI_Wtime() - kernel_start;
 

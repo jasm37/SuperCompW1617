@@ -36,6 +36,12 @@ int main(int argc, char** argv) {
 	MPI_Init(&argc, &argv); 
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
+	
+	MPI_Group cur_group;
+	MPI_Comm cur_comm;
+	MPI_Comm_group(MPI_COMM_WORLD, &cur_group);
+	MPI_Comm_create(MPI_COMM_WORLD, cur_group, &cur_comm);
+	int zerorank = 0;
 
 	if(rank == 0){
 		printf("Solving the Ax=b system with Gaussian Elimination:\n");
@@ -135,131 +141,108 @@ int main(int argc, char** argv) {
 	double *solution_local_block = (double *) malloc(local_block_size * sizeof(double));
 
 	//	send/receive respective chunk of data of A and rhs b to each process
-		if(rank == 0) {
-		for(i = 1; i < size; i++){
-			MPI_Send((matrix_1D_mapped + (i * (local_block_size * rows))), (local_block_size * rows), MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
-			MPI_Send((rhs + (i * local_block_size)), local_block_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
-		}
-		for(i = 0; i < local_block_size * rows; i++){
-			matrix_local_block[i] = matrix_1D_mapped[i];
-		}
-		for(i = 0; i < local_block_size; i++){
-			rhs_local_block[i] = rhs[i];
-		}
-	} else {
-		MPI_Recv(matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
-		MPI_Recv(rhs_local_block, local_block_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
-	}
-	/* mpi_start = MPI_Wtime();
+	
+	mpi_start = MPI_Wtime();
 	MPI_Scatter( matrix_1D_mapped, local_block_size * rows, MPI_DOUBLE, matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	MPI_Scatter( rhs, local_block_size, MPI_DOUBLE, rhs_local_block, local_block_size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        mpi_time += MPI_Wtime() - mpi_start;*/
+        mpi_time += MPI_Wtime() - mpi_start;
 
 	setup_time = MPI_Wtime() - setup_start;
 	kernel_start = MPI_Wtime();
 
-	//	receive *pivots from previous ranks, make its chunk of A upper triangular and recompute rhs b
-	for(process = 0; process < rank; process++) {
-		mpi_start = MPI_Wtime();
-		MPI_Recv(pivots, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status);
-		mpi_time += MPI_Wtime() - mpi_start;
+        //--- PIVOT PART ---
+        for(process = 0; process < size; process++){
+        
+                if(process == rank){
+                //	performs GE for its chunk of A and rhs b
+	                for(row = 0; row < local_block_size; row++){
+		                column_pivot = (rank * local_block_size) + row;
+		                index = row * rows;
+		                pivot = matrix_local_block[index + column_pivot];
+		                assert(pivot!= 0);
 
-		for(row = 0; row < local_block_size; row++){
-			column_pivot = ((int) pivots[0]) * local_block_size + row;
-			for (i = 0; i < local_block_size; i++){
-				index = i * rows;
-				tmp = matrix_local_block[index + column_pivot];
-				for (column = column_pivot; column < columns; column++){
-					matrix_local_block[index + column] -=  tmp * pivots[(row * rows) + (column + local_block_size + 1)];
-				}
-				rhs_local_block[i] -= tmp * pivots[row + 1];
-				matrix_local_block[index + column_pivot] = 0.0;
-			}
+		                for (column = column_pivot; column < columns; column++){
+			                matrix_local_block[index + column] = matrix_local_block[index + column]/pivot; 
+			                pivots[index + column + local_block_size + 1] = matrix_local_block[index + column];
+		                }
+
+		                local_work_buffer[row] = (rhs_local_block[row])/pivot;
+		                pivots[row+1] =  local_work_buffer[row];
+
+		                for (i = (row + 1); i < local_block_size; i++) {
+			                tmp = matrix_local_block[i*rows + column_pivot];
+			                for (column = column_pivot+1; column < columns; column++){
+				                matrix_local_block[i*rows+column] -=  tmp * pivots[index + column + local_block_size + 1];
+			                }
+			                rhs_local_block[i] -= tmp * local_work_buffer[row];
+			                matrix_local_block[i * rows + row] = 0;
+		                }
+	                }
+		        pivots[0] = (double) rank;
 		}
-	}
+		if (MPI_COMM_NULL != cur_comm){
+		        //	send *pivots
+		        mpi_start = MPI_Wtime();
+		        MPI_Bcast(pivots, local_block_size * row + local_block_size + 1, MPI_DOUBLE,0, cur_comm);
+		        MPI_Group_excl(cur_group, 1, &zerorank, &cur_group);
+		        MPI_Comm_create(cur_comm, cur_group, &cur_comm);
+		        mpi_time += MPI_Wtime() - mpi_start; 
+                }
+                if (process < rank) {
+                // make its chunk of A upper triangular and recompute rhs b
+		        for(row = 0; row < local_block_size; row++){
+			        column_pivot = ((int) pivots[0]) * local_block_size + row;
+			        for (i = 0; i < local_block_size; i++){
+				        index = i * rows;
+				        tmp = matrix_local_block[index + column_pivot];
+				        for (column = column_pivot; column < columns; column++){
+					        matrix_local_block[index + column] -=  tmp * pivots[(row * rows) + (column + local_block_size + 1)];
+				        }
+				        rhs_local_block[i] -= tmp * pivots[row + 1];
+				        matrix_local_block[index + column_pivot] = 0.0;
+			         }
+		        }
+	        }
+        }
+                	
+	MPI_Comm_group(MPI_COMM_WORLD, &cur_group);
+	MPI_Comm_create(MPI_COMM_WORLD, cur_group, &cur_comm);
 
-	//	performs GE for its chunk of A and rhs b
-	for(row = 0; row < local_block_size; row++){
-		column_pivot = (rank * local_block_size) + row;
-		index = row * rows;
-		pivot = matrix_local_block[index + column_pivot];
-		assert(pivot!= 0);
-
-		for (column = column_pivot; column < columns; column++){
-			matrix_local_block[index + column] = matrix_local_block[index + column]/pivot; 
-			pivots[index + column + local_block_size + 1] = matrix_local_block[index + column];
-		}
-
-		local_work_buffer[row] = (rhs_local_block[row])/pivot;
-		pivots[row+1] =  local_work_buffer[row];
-
-		for (i = (row + 1); i < local_block_size; i++) {
-			tmp = matrix_local_block[i*rows + column_pivot];
-			for (column = column_pivot+1; column < columns; column++){
-				matrix_local_block[i*rows+column] -=  tmp * pivots[index + column + local_block_size + 1];
-			}
-			rhs_local_block[i] -= tmp * local_work_buffer[row];
-			matrix_local_block[i * rows + row] = 0;
-		}
-	}
-
-	//	send *pivots
-	for (process = (rank + 1); process < size; process++) {
-		pivots[0] = (double) rank;
-		mpi_start = MPI_Wtime();
-		MPI_Send( pivots, (local_block_size * rows + local_block_size + 1), MPI_DOUBLE, process, rank, MPI_COMM_WORLD);
-		mpi_time += MPI_Wtime() - mpi_start;
-	} 
-
-	//	receive chunks of rhs b after GE
-	for (process = (rank + 1); process<size; ++process) {
-		mpi_start = MPI_Wtime();
-		MPI_Recv( accumulation_buffer, (2 * local_block_size), MPI_DOUBLE, process, process, MPI_COMM_WORLD, &status); 
-		mpi_time += MPI_Wtime() - mpi_start;
-
-		for (row  = (local_block_size - 1); row >= 0; row--) {
-			for (column = (local_block_size - 1);column >= 0; column--) {
-				index = (int) accumulation_buffer[column];
-				local_work_buffer[row] -= accumulation_buffer[local_block_size + column] * matrix_local_block[row * rows + index];
-			}
-		}
-	}
-
-	//	compute local solutions(chunk of x)
-	for (row = (local_block_size - 1); row >= 0; row--) {
-		index = rank * local_block_size + row;
-		accumulation_buffer[row] = (double) index;
-		accumulation_buffer[local_block_size+row] = solution_local_block[row] = local_work_buffer[row];
-		for (i = (row - 1); i >= 0; i--){
-			local_work_buffer[i] -= solution_local_block[row] * matrix_local_block[ (i * rows) + index];
-		}
-	}
-
-	//	send chunks of rhs b after GE to other ranks
-	for (process = 0; process < rank; process++){
-		mpi_start = MPI_Wtime();
-		MPI_Send( accumulation_buffer, (2 * local_block_size), MPI_DOUBLE, process, rank, MPI_COMM_WORLD); 
-		mpi_time += MPI_Wtime() - mpi_start;
-	}
+        for(process = size-1; process>-1; process--){
+	        if(rank == 0){
+	        //	compute local solutions(chunk of x)
+	                for (row = (local_block_size - 1); row >= 0; row--) {
+		                index = rank * local_block_size + row;
+		                accumulation_buffer[row] = (double) index;
+		                accumulation_buffer[local_block_size+row] = solution_local_block[row] = local_work_buffer[row];
+		                for (i = (row - 1); i >= 0; i--){
+			                local_work_buffer[i] -= solution_local_block[row] * matrix_local_block[ (i * rows) + index];
+		                }
+	                }
+	        }
+	        //communicate local solutions
+	        if (MPI_COMM_NULL != cur_comm){
+		                mpi_start = MPI_Wtime();
+		                MPI_Bcast( accumulation_buffer, 2 * local_block_size, MPI_DOUBLE, process, cur_comm);
+		                MPI_Group_excl(cur_group, 1, &process, &cur_group);
+		                MPI_Comm_create(cur_comm, cur_group, &cur_comm);
+		                mpi_time += MPI_Wtime() - mpi_start; 
+                        }
+                if(process > rank){
+		        for (row  = (local_block_size - 1); row >= 0; row--) {
+			        for (column = (local_block_size - 1);column >= 0; column--) {
+				        index = (int) accumulation_buffer[column];
+				        local_work_buffer[row] -= accumulation_buffer[local_block_size + column] * matrix_local_block[row * rows + index];
+			        }
+		        }
+                }
+        }
+   
 
 	//	send/receive solutions
-		if(rank == 0) {
-		for(i = 0; i < local_block_size; i++){
-			solution[i] = solution_local_block[i];
-		}
-		mpi_start = MPI_Wtime();
-		for(i = 1; i < size; i++){
-			MPI_Recv(solution + (i * local_block_size), local_block_size, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
-		}
-		mpi_time += MPI_Wtime() - mpi_start;
-	} else {
-		mpi_start = MPI_Wtime();
-		MPI_Send(solution_local_block, local_block_size, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-		mpi_time += MPI_Wtime() - mpi_start;
-	}
-	/* mpi_start = MPI_Wtime();
+	mpi_start = MPI_Wtime();
 	MPI_Gather(solution_local_block, local_block_size, MPI_DOUBLE, solution, local_block_size*size , MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	mpi_time += MPI_Wtime() - mpi_start;*/
+	mpi_time += MPI_Wtime() - mpi_start;
 	
 	kernel_time = MPI_Wtime() - kernel_start;
 

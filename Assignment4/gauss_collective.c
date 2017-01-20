@@ -214,7 +214,7 @@ int main(int argc, char** argv) {
 	MPI_Comm_create(MPI_COMM_WORLD, cur_group, &cur_comm);
 
         for(process = size-1; process>-1; process--){
-	        if(rank == 0){
+	        if(rank == process){
 	        //	compute local solutions(chunk of x)
 	                for (row = (local_block_size - 1); row >= 0; row--) {
 		                index = rank * local_block_size + row;

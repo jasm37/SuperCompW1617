@@ -141,18 +141,18 @@ int main(int argc, char** argv) {
 	double *solution_local_block = (double *) malloc(local_block_size * sizeof(double));
 
 	//	send/receive respective chunk of data of A and rhs b to each process
-	
 	mpi_start = MPI_Wtime();
 	MPI_Scatter( matrix_1D_mapped, local_block_size * rows, MPI_DOUBLE, matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	MPI_Scatter( rhs, local_block_size, MPI_DOUBLE, rhs_local_block, local_block_size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         mpi_time += MPI_Wtime() - mpi_start;
 
+
 	setup_time = MPI_Wtime() - setup_start;
 	kernel_start = MPI_Wtime();
 
-        //--- PIVOT PART ---
-        for(process = 0; process < size; process++){
-        
+ //--- PIVOT PART ---
+
+        for(process = 0; process < size; process++){   
                 if(process == rank){
                 //	performs GE for its chunk of A and rhs b
 	                for(row = 0; row < local_block_size; row++){
@@ -180,14 +180,17 @@ int main(int argc, char** argv) {
 	                }
 		        pivots[0] = (double) rank;
 		}
+		
+		//communicate pivots
 		if (MPI_COMM_NULL != cur_comm){
 		        //	send *pivots
 		        mpi_start = MPI_Wtime();
-		        MPI_Bcast(pivots, local_block_size * row + local_block_size + 1, MPI_DOUBLE,0, cur_comm);
+		        MPI_Bcast(pivots, local_block_size * rows + local_block_size + 1, MPI_DOUBLE,0, cur_comm);
 		        MPI_Group_excl(cur_group, 1, &zerorank, &cur_group);
 		        MPI_Comm_create(cur_comm, cur_group, &cur_comm);
 		        mpi_time += MPI_Wtime() - mpi_start; 
                 }
+                
                 if (process < rank) {
                 // make its chunk of A upper triangular and recompute rhs b
 		        for(row = 0; row < local_block_size; row++){
@@ -204,7 +207,9 @@ int main(int argc, char** argv) {
 		        }
 	        }
         }
-                	
+
+        // --- SOLUTION PART ---
+               	
 	MPI_Comm_group(MPI_COMM_WORLD, &cur_group);
 	MPI_Comm_create(MPI_COMM_WORLD, cur_group, &cur_comm);
 
@@ -237,11 +242,11 @@ int main(int argc, char** argv) {
 		        }
                 }
         }
-   
 
+        // --- FINAL PART ---
 	//	send/receive solutions
 	mpi_start = MPI_Wtime();
-	MPI_Gather(solution_local_block, local_block_size, MPI_DOUBLE, solution, local_block_size*size , MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Gather(solution_local_block, local_block_size, MPI_DOUBLE, solution, local_block_size , MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	mpi_time += MPI_Wtime() - mpi_start;
 	
 	kernel_time = MPI_Wtime() - kernel_start;

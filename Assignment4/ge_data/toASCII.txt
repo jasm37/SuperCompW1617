@@ -1,0 +1,4 @@
+#Use the following line in linux command line to convert a vector in a binary file to ascii
+Input: sample.sol -> Binary file with the vector
+Output:output.sol -> ASCII file as output
+hexdump -v -e '1/8 "%9f"' -e '"\n"' sample.sol > output.sol

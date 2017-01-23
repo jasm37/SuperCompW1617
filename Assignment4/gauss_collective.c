@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -114,10 +115,10 @@ int main(int argc, char** argv) {
 
 	int i;
 	//	Rank 0 sends number of rows and columns and the other processes receive them
-	mpi_start = MPI_Wtime();
+		//mpi_start = MPI_Wtime();
 	MPI_Bcast(&rows, 1, MPI_INT, 0 , MPI_COMM_WORLD);
 	MPI_Bcast(&columns, 1, MPI_INT, 0 , MPI_COMM_WORLD);
-	mpi_time += MPI_Wtime() - mpi_start;	
+		//mpi_time += MPI_Wtime() - mpi_start;	
 
 	//	Matrix A will be divided in groups of rows(chunks) and each group sent to each process
 	//	The same is done for the vectors x and b
@@ -141,10 +142,10 @@ int main(int argc, char** argv) {
 	double *solution_local_block = (double *) malloc(local_block_size * sizeof(double));
 
 	//	send/receive respective chunk of data of A and rhs b to each process
-	mpi_start = MPI_Wtime();
+		//mpi_start = MPI_Wtime();
 	MPI_Scatter( matrix_1D_mapped, local_block_size * rows, MPI_DOUBLE, matrix_local_block, local_block_size * rows, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	MPI_Scatter( rhs, local_block_size, MPI_DOUBLE, rhs_local_block, local_block_size, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        mpi_time += MPI_Wtime() - mpi_start;
+        //mpi_time += MPI_Wtime() - mpi_start;
 
 
 	setup_time = MPI_Wtime() - setup_start;

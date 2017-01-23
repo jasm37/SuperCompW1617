@@ -28,7 +28,7 @@ for line in inputfile:
         proc=procsizes[j]
         line=line.replace(";","")
         line=line.replace("[R","")
-        line=line.replace("]",",")
+        line=line.replace("]","")
         times=line.split(' ')
         outputfile.write('{}, {}, {}, {}, {}, {}, {}, {}\n'.format(problems,proc,times[0],times[3],times[5],times[7],times[9],times[11]))
         

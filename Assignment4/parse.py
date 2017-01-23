@@ -3,8 +3,8 @@
 
 #args = getopt.getopt(argv,"hi:o:",["ifile="])
 
-inputfile = open('runres_collective_nosolution');
-outputfile = open('64_8_2.csv','w');
+inputfile = open('runres_collective_all');
+outputfile = open('collectall.csv','w');
 
 problemsizes = [64,512,1024,2048,4096,8192];
 procsizes = [8,16,32,64];
@@ -28,7 +28,7 @@ for line in inputfile:
         proc=procsizes[j]
         line=line.replace(";","")
         line=line.replace("[R","")
-        line=line.replace("]",",")
+        line=line.replace("]","")
         times=line.split(' ')
         outputfile.write('{}, {}, {}, {}, {}, {}, {}, {}\n'.format(problems,proc,times[0],times[3],times[5],times[7],times[9],times[11]))
         

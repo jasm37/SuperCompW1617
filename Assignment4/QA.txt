@@ -3,13 +3,19 @@ Last assignment ;)
 2.1 Submit updated GE with collective commands
 2.2 Questions:
     1.  Which patterns were identified and replaced with collective communication?
-        A:  Bcast was used to share sizes of problem, scatter was used to distibute parts of problem matrix, gather was used to asssemble solution together
+        A:  Bcast was used to share sizes of problem, scatter was used to distibute parts of problem matrix, gather was used to asssemble solution together.
+			In order to replace all communication with non-blocking ones the solution part of the program was changed: 
+				we iterate over number of ranks, with each new iteration we reduce sze of communicator group exluding ranks with alredy solved parts, also reordered partsof solution so that communication is between obtaining results and propagating them through the next ranks
     2.  Were you able to identify any potential for overlap and used any non-blocking collectives?
-        A:  No idea yet how to change the recv inside the loops
+        A:  The computation for each next block depends on the results from previous ranks, so no overlaps are possible
+			Non-blocking collectives were not used. Furthermore non-blocking communication did not show any improvement
+			for asignment with p2p commnication, and non-blocking collectives in the solution part of the program will cause
+			even larger overhead, since they require particpation of more ranks.
     3.  Was there any measurable performance or scalability improvement as a result of these changes?
-        A:  ?? Might not get speedup due to many collective commands?
+        A:  There is no significant speed up, for large problem sizes about 1% for significant number of processor.
     4.  Is the resulting code easier to understand and maintain after the changes? Why?
-        A:  Yes, the reduction of MPI lines/commands makes it easier to read and mantain
+        A:  Yes, the reduction of MPI lines/commands makes it easier to read and mantain.
+		What needed loop over ranks with separate send and recieve operations now requires onlz one line of code with bcast/gather/scatter.
 3.1 Submit updated GE with IO commands
 3.2 Questions:
     1.  Which MPI-IO operations were applied to transform the code? Explain choices

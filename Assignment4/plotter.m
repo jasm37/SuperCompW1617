@@ -5,7 +5,7 @@
 %A = textscan(fileID, '%d %d %f %f %f %f %f %f','delimiter', ',', 'EmptyValue', 0);
 %A = dlmread('');
 %   Reads this file, so make sure it is in the working folder!
-A = csvread('64_8_2.csv');
+A = csvread('collectall.csv');
 
 %fclose(fileID);
 
@@ -15,7 +15,7 @@ Numproc = [8,16,32,64];
 Sample = zeros(1,n-3);
 Means = zeros(length(Numproc),n-3);
 Variances = zeros(length(Numproc),n-3);
-colours=['m','g','b','r','c','y'];
+colours=['m','g','b','r','c'];
 
 for P = Psizes
 k=1;
@@ -38,14 +38,18 @@ for j = Numproc
     k=k+j;
     i=i+1;
 end
-Means(:,1) = Means(:,1).*(Numproc.');
-
+%Means(:,1) = Means(:,1).*(Numproc.');
+%%%%%speedup
+for i = 1:size(Means,2) 
+    Means(:,i) = Means(1,i)./Means(:,i);
+end
+%%%%%%%%%
 figure; hold on;
 title(sprintf('Strong scaling for problem size %d',P))
 xlabel('number of processors')
-ylabel('time')
-plot( Numproc, Means(:,1),'y')
-for i = 2:size(Means,2)
+ylabel('speedup')
+%plot( Numproc, Means(:,1),'k')
+for i = 1:size(Means,2)
     % shaded variance corridor uses external function 
     % https://de.mathworks.com/matlabcentral/fileexchange/27485-boundedline-m?s_tid=srchtitle
     %plot(Numproc,Means(:,i))
@@ -54,10 +58,11 @@ for i = 2:size(Means,2)
 end
 grid on
 %legend(h([1 3 5 7 9]),{'i/o','setup','compute','mpi','total'});
-legend('i/o','setup var','setup','compute var','compute','mpi var','mpi','total var', 'total')
+legend('i/o','i/o var','setup var','setup','compute var','compute','mpi var','mpi','total var', 'total')
 %legend('i/o','setup','compute','mpi','total')
 % uses http://de.mathworks.com/matlabcentral/fileexchange/1039-hline-and-vline
 vline(8), vline(16), vline(32), vline(64)
+refline(1/8,0);
 
 hold off;
 

@@ -7,7 +7,7 @@ Last assignment ;)
     2.  Were you able to identify any potential for overlap and used any non-blocking collectives?
         A:  No idea yet how to change the recv inside the loops
     3.  Was there any measurable performance or scalability improvement as a result of these changes?
-        A:  ???
+        A:  ?? Might not get speedup due to many collective commands?
     4.  Is the resulting code easier to understand and maintain after the changes? Why?
         A:  Yes, the reduction of MPI lines/commands makes it easier to read and mantain
 3.1 Submit updated GE with IO commands
@@ -31,8 +31,8 @@ Last assignment ;)
             is first read must be as large as the total number of bytes between the first and last byte requested by the user.
             To avoid this problem, the technique described above is performed in parts, reading only as much data at a time
             as defined by a special parameter.
-            **Data Sieving cann also be used to write data..
-            **One could argue that most file systems perform sieving in the form of caching
+            >>Data Sieving can also be used to write data..
+            >>One could argue that most file systems perform sieving in the form of caching
             >>> The advantage of data sieving is that data is always accessed in large chunks,
                 although at the cost of reading more data than needed.
 
@@ -44,7 +44,7 @@ Last assignment ;)
             two phases:
               I.  Processes access data assuming a distribution in memory that results in each process making one long continuous acces
               II. Processes distribute the data among themselves according to a desired distribution.
-            >>The advantage is that making large, contiguous accesses, we IO time is reduced considerably. Although there might be a
+            >>The advantage is that making large, contiguous accesses, the IO time is reduced considerably. Although there might be a
               small cost of communication between processes.
 
     3.  Was the original implementation scalable in terms of IO performance?
@@ -54,4 +54,4 @@ Last assignment ;)
     5.  How much of the communication in the application was replaced or eliminated with MPI IO?
         A:  I suppose all the IO comm will be changed
     6.  Were there any performance improvements due to the change to MPI-IO?
-        A:  ??
+        A:  Apparently yes, according to internet ;)

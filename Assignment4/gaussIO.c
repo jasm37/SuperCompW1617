@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
 		}
 		index = 0;
 	}
-
+	/** Setup time will be added to IO time to avoid confusions**/
 	//setup_start = MPI_Wtime();
 
 	int i;
@@ -130,6 +130,7 @@ int main(int argc, char** argv) {
 
 	io_time += MPI_Wtime() - io_start;
 	//setup_time = MPI_Wtime() - setup_start;
+	/** Setup time will be added to IO time to avoid confusions**/
 	kernel_start = MPI_Wtime();
 
 	//	receive *pivots from previous ranks, make its chunk of A upper triangular and recompute rhs b

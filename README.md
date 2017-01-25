@@ -16,7 +16,7 @@ Only works for repositories of github.com, not for lrz gitlab repositories );
 
 2.  Log in to SuperMUC with:
   ```sh
-  ssh -R <port-number>:github.com:9418: <supermuc-login>@supermuc.lrz.de
+  ssh -R <port-number>:github.com:9418 <supermuc-login>@supermuc.lrz.de
   ```
 
   where port-number could be any number  between 10000 and 65535
@@ -43,7 +43,7 @@ If you don't want to type the same commands every time you log in to SuperMUC th
 
 ## 3. Running .sh files
 
-If the you want to run mysh.sh then do:
+If you want to run mysh.sh then do:
 ```sh
 llsubmit mysh.sh
 ```

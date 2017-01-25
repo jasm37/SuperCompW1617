@@ -14,10 +14,10 @@ def toASCII(n):
     os.system(command)
 
 #If you want to print all matrices to ASCII at once, run the following:
-#dimensions = [8, 16, 32, 64, 512, 1024, 2048, 4096, 8192]
-#for d in dimensions:
-#    toASCII(d)
+dimensions = [8, 16, 32, 64, 512, 1024, 2048, 4096, 8192]
+for d in dimensions:
+    toASCII(d)
 
 #Otherwise run the following:
-d = 64
-toASCII(d)
+#d = 64
+#toASCII(d)

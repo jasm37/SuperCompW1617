@@ -1,4 +1,6 @@
-#Runs with python 2.7
+#Runs with python 2.7 
+#This script should be run in the folder where all the matrices files are.
+#As output it will create binary versions of the files .vec and .mat
 from array import array
 def toBinary(n, fileformat):
     dim = str(n)
@@ -20,7 +22,7 @@ def toBinary(n, fileformat):
 
 dimensions = [8, 16, 32, 64, 512, 1024, 2048, 4096, 8192]
 formats = ['vec','mat']
-#### there might be problems with big dimensions!
+#### there might memory issues with big dimensions(bigger than 8192)!
 for d in dimensions:
     for fmt in formats:
         toBinary(d,fmt)

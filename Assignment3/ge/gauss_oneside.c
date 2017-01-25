@@ -18,11 +18,11 @@ int main(int argc, char** argv) {
 	//	Files to read
 	FILE *matrix_file, *vector_file, *solution_file;
 
-	MPI_Request req;
+	/*MPI_Request req;
 	MPI_Status status;
 	MPI_Status m_status[2];
 	MPI_Request req_rec[2];
-	MPI_Request req_send[2];
+	MPI_Request req_send[2];*/
 
 	if( argc != 2 ) { 
 		perror("The base name of the input matrix and vector files must be given\n"); 
@@ -222,10 +222,11 @@ int main(int argc, char** argv) {
 		for (process_index = rank+1; process_index < size; process_index++){
 			ranks_in_group_to_get_from[ii++]=process_index;
 		}*/
-		mpi_start = MPI_Wtime();
+	
 		//MPI_Group_incl(comm_group, size-process-1, ranks_in_group_to_get_from, all_groups2+process);
 		MPI_Group any_group;
 		MPI_Group_incl(comm_group, 1, &process, &any_group);
+                mpi_start = MPI_Wtime();
 		MPI_Win_post(any_group, 0, test_win_ge);
 		MPI_Win_wait(test_win_ge);
 		//printf("\nInside rank %d in part THAY ALL TAKE PIVOTS FROM ME\n", rank);
@@ -281,19 +282,19 @@ int main(int argc, char** argv) {
 	for (process = (rank + 1); process < size; process++){
 		ranks_in_group_to_put[ii++]=process;
 	}
-	mpi_start = MPI_Wtime();
 	//MPI_Group_incl(comm_group, size-rank-1, ranks_in_group_to_put, all_groups2+rank);
 	//MPI_Win_start(all_groups2[rank], 0, test_win_ge);
 	MPI_Group anny_group2;
 	MPI_Group_incl(comm_group, size-rank-1, ranks_in_group_to_put, &anny_group2);
+        mpi_start = MPI_Wtime();
 	MPI_Win_start(anny_group2, 0, test_win_ge);
 	for (process = (rank + 1); process < size; process++) {
 		MPI_Put(pivots, size_pivots, MPI_DOUBLE, process, 0, size_pivots, MPI_DOUBLE, test_win_ge);
 	} 
 	MPI_Win_complete(test_win_ge);
 	//MPI_Win_free(&test_win_ge);
+        mpi_time += MPI_Wtime() - mpi_start;
 	MPI_Group_free(&anny_group2);
-	mpi_time += MPI_Wtime() - mpi_start;
 	free(ranks_in_group_to_put);
 
 //SOLVING - BACK SUBSTITUTION
@@ -307,9 +308,9 @@ int main(int argc, char** argv) {
 	//Receive chunks of rhs b after GE. Now vice verse I'm receiving from all the processes beneath me
 	//for (process = (rank + 1); process<size; ++process)
 	for (process = size-1; process>rank; process--) {
-		mpi_start = MPI_Wtime();
 		MPI_Group any_group3;
 		MPI_Group_incl(comm_group, 1, &process, &any_group3);
+                mpi_start = MPI_Wtime();
 		MPI_Win_post(any_group3, 0, test_win_bs);
 		MPI_Win_wait(test_win_bs);
 		mpi_time += MPI_Wtime() - mpi_start;
@@ -343,9 +344,9 @@ int main(int argc, char** argv) {
 	/*for (process = rank-1; process > 0; process--){
 			ranks_in_group_to_put_assbuf[ii++]=process;
 	}*/
-	mpi_start = MPI_Wtime();
 	MPI_Group anny_group4;
 	MPI_Group_incl(comm_group, rank, ranks_in_group_to_put_assbuf, &anny_group4);
+        mpi_start = MPI_Wtime();
     MPI_Win_start(anny_group4, 0, test_win_bs);
 	for (process = 0; process < rank; process++){
 		MPI_Put(accumulation_buffer, size_accumulation_buffer, MPI_DOUBLE, process, 0, size_accumulation_buffer, MPI_DOUBLE, test_win_bs);
@@ -360,8 +361,8 @@ int main(int argc, char** argv) {
 //Gathering the solution
 	MPI_Win test_win_soultion;
 	if(rank == 0) {
-		mpi_start = MPI_Wtime();
 		MPI_Win_create(solution, rows * sizeof(double), sizeof(double), MPI_INFO_NULL, MPI_COMM_WORLD, &test_win_soultion);
+                mpi_start = MPI_Wtime();
 		MPI_Win_fence(0, test_win_soultion);
 		//Wait for solution to be put with PUT from the other ranks!
 	    MPI_Win_fence(0, test_win_soultion);
@@ -370,8 +371,8 @@ int main(int argc, char** argv) {
 			solution[i] = solution_local_block[i];
 		}
 	} else {
-		mpi_start = MPI_Wtime();
 		MPI_Win_create(NULL, 0, sizeof(double), MPI_INFO_NULL, MPI_COMM_WORLD, &test_win_soultion);
+                mpi_start = MPI_Wtime();
 		MPI_Win_fence(0, test_win_soultion);
 		int target_disp_solutio  = rank * local_block_size ;
 		MPI_Put(solution_local_block, local_block_size, MPI_DOUBLE, 0, target_disp_solutio, local_block_size, MPI_DOUBLE, test_win_soultion);

@@ -4,7 +4,7 @@ Last assignment ;)
 2.2 Questions:
     1.  Which patterns were identified and replaced with collective communication?
         A:  Bcast was used to share sizes of problem, scatter was used to distibute parts of problem matrix, gather was used to asssemble solution together.
-			In order to replace all communication with non-blocking ones the solution part of the program was changed: 
+			In order to replace all communication with non-blocking ones the solution part of the program was changed:
 				we iterate over number of ranks, with each new iteration we reduce sze of communicator group exluding ranks with alredy solved parts, also reordered partsof solution so that communication is between obtaining results and propagating them through the next ranks
     2.  Were you able to identify any potential for overlap and used any non-blocking collectives?
         A:  The computation for each next block depends on the results from previous ranks, so no overlaps are possible
@@ -19,7 +19,13 @@ Last assignment ;)
 3.1 Submit updated GE with IO commands
 3.2 Questions:
     1.  Which MPI-IO operations were applied to transform the code? Explain choices
-
+        A:  MPI_File_open : Creates a MPI_File pointer to a file address for each rank.
+            MPI_File_read_all : Collective read of a selected file and store content in a buffer at each rank.
+            MPI_File:read_at_all: Collective read of a file given offsets for each rank(different positions in the file) and store
+                                  content in a buffer.
+            MPI_File_write_at_all : Collective write of a buffer to a file given offsets for each rank(different positions in the file)
+            MPI_File_close :  Closes the selected MPI_File pointer.
+            **Observation: all reads an writes are done in binary format
     2.  What is "Data-Sieving" and "2 Phase IO"? How do they help improve IO performance?
         A:
             **Data Sieving: Sources : http://home.agh.edu.pl/~kzajac/ooc_tut/node6.html
@@ -54,10 +60,19 @@ Last assignment ;)
               small cost of communication between processes.
 
     3.  Was the original implementation scalable in terms of IO performance?
-        A:  ??
+        A:  IN terms of IO, the original implementation just loads the whole matrix A and rhs b to rank 0 and proceeds
+            to distribute it to the rest of the ranks. This is plotted in the slides for 8192x8192.
+            The comparison shows that the time required for the whole procedure remains almost constant while the IO
+            approach scales slowly but better than the original.
     4.  Was the original implementation scalable in terms of RAM storage?
-        A:  ??
+        A:  In terms of memory rank 0 always stores the complete array which does not scale properly for large matrices
+            In the case of IO, every rank gets a chunk of data from the original file , making a better scaling when more
+            processes are added(less memory per process)
     5.  How much of the communication in the application was replaced or eliminated with MPI IO?
-        A:  I suppose all the IO comm will be changed
+        A:  All of input and output commands in rank 0 were replaced by collective MPI IO commands. The respective
+            replacement is shown in the slides.
     6.  Were there any performance improvements due to the change to MPI-IO?
-        A:  Apparently yes, according to internet ;)
+        A:  Yes, while doing collective reading or writing of a file, the IO times decreases since the task is distributed
+            to all ranks and not to only rank 0 as in the original implementation.
+            In the plot in the slides, we only plot IO+computational time since they are the only affected time with
+            the addition of the MPI IO commands. So basically the other time remain almost the same except for these.
